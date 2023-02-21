@@ -152,3 +152,4 @@ cython_debug/
 #.idea/
 
 *.history
+data_example

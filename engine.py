@@ -6,20 +6,18 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from time import sleep
 import logging
-from threading import Thread
 
+
+from threading import Thread
+import asyncio
 from event_bus import EventBus
 from model import Event, EventType, Bar, Order, Trade, OrderType, Asset, AssetType
-from data.core import DataFeed
+from data.core import DataFeed, DummyBarFeed
+
+from util import TaskAdapter, setup_logger
 
 
-LOG = logging.getLogger(__name__)
-logFormatter = logging.Formatter(
-    "%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
-consoleHandler = logging.StreamHandler()
-consoleHandler.setFormatter(logFormatter)
-logging.getLogger().addHandler(consoleHandler)
-LOG.setLevel(logging.DEBUG)
+LOG = TaskAdapter(setup_logger(), {})
 
 
 class Engine:
@@ -30,16 +28,22 @@ class Engine:
         self.feed = feed
         self.execution = execution
 
-    def run(self):
+        self.running = False
+        self.loop = asyncio.get_event_loop()
+        self.tasks: List[asyncio.Task] = list()
+
+    async def run(self):
         # subs
         self.bus.subscribe(EventType.BAR, self.strategy.on_bar)
         self.bus.subscribe(EventType.ORDER_CREATE,
                            self.execution.on_order_create)
-        self.bus.start()
-        self.feed.start()
 
-        while True:
-            sleep(0.05)
+        if not self.running:
+            self.running = True
+            self.tasks.append(self.loop.create_task(self.bus.start()))
+            self.tasks.append(self.loop.create_task(self.feed.start()))
+
+        await asyncio.gather(*self.tasks)
 
 
 class Execution(ABC):
@@ -92,13 +96,13 @@ class Strategy:
     def __init__(self, bus: EventBus) -> None:
         self.bus = bus
 
-    def on_bar(self, bar: Bar):
+    async def on_bar(self, bar: Bar):
         LOG.info(f"Strategy reveived {bar}")
         LOG.info(f"Computing some fancy signal ...")
         LOG.info(f"Submit Order...")
-        self.submit_order()
+        await self.submit_order()
 
-    def submit_order(self):
+    async def submit_order(self):
         order = Order(
             asset=Asset(AssetType.CASH, name="Bitcoin"),
             type=OrderType.MARKET,
@@ -109,4 +113,18 @@ class Strategy:
             EventType.ORDER_CREATE,
             payload=order
         )
-        self.bus.push(event)
+        await self.bus.push(event)
+
+
+async def main():
+
+    bus = EventBus()
+    strategy = Strategy(bus)
+    feed = DummyBarFeed(bus)
+    execution = DummyExecution(bus)
+    engine = Engine(bus, strategy, feed, execution)
+
+    await engine.run()
+
+
+asyncio.run(main())

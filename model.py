@@ -46,7 +46,6 @@ class Asset:
 
 @dataclass(frozen=True)
 class Order:
-    id: int
     asset: Asset
     type: OrderType
     price: Decimal

@@ -4,15 +4,15 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from threading import Thread
 from time import sleep
-
+import asyncio
 import pandas as pd
 
 from event_bus import EventBus
 from model import Bar, Event, EventType
 
-import logging
+from util import TaskAdapter, setup_logger
 
-LOG = logging.getLogger(__name__)
+LOG = TaskAdapter(setup_logger(), {})
 
 
 class DataFeed(ABC):
@@ -58,15 +58,12 @@ class DummyBarFeed(DataFeed):
 
     def __init__(self, bus: EventBus) -> None:
         self.bus = bus
-        self.thread = Thread(target=self._run)
 
-    def start(self):
-        LOG.info(f"{self} thread starting...")
-        self.thread.start()
-
-    def _run(self):
+    async def start(self):
+        LOG.info(f"{self} process starting...")
         while True:
-            sleep(2)
+            LOG.debug("feeding")
+            await asyncio.sleep(2)
             bar = Bar(
                 open=100,
                 high=200,
@@ -80,4 +77,4 @@ class DummyBarFeed(DataFeed):
                 payload=bar
             )
             LOG.debug(f"DummyBarFeed pushed {event}")
-            self.bus.push(event)
+            await self.bus.push(event)

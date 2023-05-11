@@ -14,7 +14,7 @@ from event_bus import EventBus
 from model import Event, EventType, Bar, Order, Trade, OrderType, Asset, AssetType
 from data.core import DataFeed, DummyBarFeed
 
-from util import TaskAdapter, setup_logger
+from log_utility import TaskAdapter, setup_logger
 
 
 LOG = TaskAdapter(setup_logger(), {})

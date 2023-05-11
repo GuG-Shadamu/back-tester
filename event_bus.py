@@ -3,12 +3,11 @@ from __future__ import annotations
 from collections import defaultdict
 import asyncio
 from typing import Dict, List, Callable
-import logging
 from inspect import iscoroutinefunction
 
 from model import EventType, Event
 
-from util import TaskAdapter, setup_logger
+from log_utility import TaskAdapter, setup_logger
 
 LOG = TaskAdapter(setup_logger(), {})
 
@@ -36,7 +35,6 @@ class EventBus:
         """ blocking run """
 
         while True:
-
             while self.events:
                 if self.events.qsize() > 0:
                     event = await self.events.get()
@@ -46,5 +44,5 @@ class EventBus:
                             await _callable(event.payload)
                         else:
                             _callable(event.payload)
-                LOG.info("running")  # why is this not working?!!
+                LOG.info("running")
                 await asyncio.sleep(self.sample_freq)

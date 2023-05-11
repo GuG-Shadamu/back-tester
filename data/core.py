@@ -10,7 +10,7 @@ import pandas as pd
 from event_bus import EventBus
 from model import Bar, Event, EventType
 
-from util import TaskAdapter, setup_logger
+from log_utility import TaskAdapter, setup_logger
 
 LOG = TaskAdapter(setup_logger(), {})
 

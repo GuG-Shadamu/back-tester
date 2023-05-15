@@ -5,7 +5,8 @@ from abc import ABC, abstractmethod
 import asyncio
 from event_bus import EventBus
 from model import Event, EventType, Bar, Order, OrderType, Asset, AssetType
-from data.core import DataFeed, DummyBarFeed
+from data.core import DataFeed, OHLCBarFeed
+from data_handler import OHLCData
 
 from log_utility import TaskAdapter, setup_logger
 
@@ -107,7 +108,10 @@ class Strategy:
 async def main():
     bus = EventBus()
     strategy = Strategy(bus)
-    feed = DummyBarFeed(bus)
+    data_ohlc = OHLCData.from_csv_file(
+        Asset(AssetType.FX, "USDCAD"), "data_example/DAT_ASCII_USDCAD_M1_202304.csv"
+    )
+    feed = OHLCBarFeed(bus, OHLCData=data_ohlc)
     execution = DummyExecution(bus)
     engine = Engine(bus, strategy, feed, execution)
 

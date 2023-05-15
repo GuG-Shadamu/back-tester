@@ -1,0 +1,4 @@
+attr==0.3.2
+pandas==2.0.1
+polars==0.17.13
+Requests==2.30.0

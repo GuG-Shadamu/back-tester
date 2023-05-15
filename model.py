@@ -2,7 +2,6 @@ from typing import Any
 from datetime import datetime
 from dataclasses import dataclass
 from enum import Enum
-from decimal import Decimal
 
 
 # Basic Data Types
@@ -30,6 +29,7 @@ class Bar:
 
 class AssetType(Enum):
     CASH = "CASH"
+    FX = "FX"
 
 
 class OrderType(Enum):
@@ -38,9 +38,15 @@ class OrderType(Enum):
     STOP = "STOP"
 
 
-@dataclass
+@dataclass(frozen=True)
 class Asset:
     type: AssetType
+    name: str
+
+
+@dataclass(frozen=True)
+class Forex(Asset):
+    type = AssetType
     name: str
 
 
@@ -48,12 +54,12 @@ class Asset:
 class Order:
     asset: Asset
     type: OrderType
-    price: Decimal
-    amount: Decimal
+    price: float
+    amount: float
 
 
 @dataclass(frozen=True)
 class Trade:
     order_id: int
-    amount: Decimal
-    price: Decimal
+    amount: float
+    price: float

@@ -1,17 +1,10 @@
 from __future__ import annotations  # the FUTURE of annotation...hah
 
-from collections import defaultdict
-from typing import Any, Dict, List, Callable
+from typing import List
 from abc import ABC, abstractmethod
-from datetime import datetime
-from time import sleep
-import logging
-
-
-from threading import Thread
 import asyncio
 from event_bus import EventBus
-from model import Event, EventType, Bar, Order, Trade, OrderType, Asset, AssetType
+from model import Event, EventType, Bar, Order, OrderType, Asset, AssetType
 from data.core import DataFeed, DummyBarFeed
 
 from log_utility import TaskAdapter, setup_logger
@@ -21,8 +14,9 @@ LOG = TaskAdapter(setup_logger(), {})
 
 
 class Engine:
-
-    def __init__(self, bus: EventBus, strategy: Strategy, feed: DataFeed, execution: Execution):
+    def __init__(
+        self, bus: EventBus, strategy: Strategy, feed: DataFeed, execution: Execution
+    ):
         self.bus = bus
         self.strategy = strategy
         self.feed = feed
@@ -35,8 +29,7 @@ class Engine:
     async def run(self):
         # subs
         self.bus.subscribe(EventType.BAR, self.strategy.on_bar)
-        self.bus.subscribe(EventType.ORDER_CREATE,
-                           self.execution.on_order_create)
+        self.bus.subscribe(EventType.ORDER_CREATE, self.execution.on_order_create)
 
         if not self.running:
             self.running = True
@@ -47,7 +40,6 @@ class Engine:
 
 
 class Execution(ABC):
-
     @abstractmethod
     def submit_order(self, order: Order) -> int:
         ...
@@ -62,6 +54,7 @@ class Execution(ABC):
 
     @abstractmethod
     def on_order_create(self, order: Order):
+        LOG.info(f"Execution recieved {order =  }")
         ...
 
     @abstractmethod
@@ -70,7 +63,6 @@ class Execution(ABC):
 
 
 class DummyExecution(Execution):
-
     def __init__(self, bus: EventBus) -> None:
         self.bus = bus
 
@@ -84,7 +76,7 @@ class DummyExecution(Execution):
         return super().modify_order(order_id, order)
 
     def on_order_create(self, order: Order):
-        LOG.info(f"Execution recieved {order =  }")
+        return super().on_order_create(order)
 
     def start(self):
         return super().start()
@@ -92,7 +84,6 @@ class DummyExecution(Execution):
 
 # 2. I write down strategy class
 class Strategy:
-
     def __init__(self, bus: EventBus) -> None:
         self.bus = bus
 
@@ -109,15 +100,11 @@ class Strategy:
             price=-1,
             amount=1.0,
         )
-        event = Event(
-            EventType.ORDER_CREATE,
-            payload=order
-        )
+        event = Event(EventType.ORDER_CREATE, payload=order)
         await self.bus.push(event)
 
 
 async def main():
-
     bus = EventBus()
     strategy = Strategy(bus)
     feed = DummyBarFeed(bus)

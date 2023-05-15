@@ -9,14 +9,14 @@ from pathlib import Path
 
 
 class Serializable:
-
     def __init__(self) -> None:
         self.data = None
 
     @classmethod
     def __init__(self, arg) -> None:
         raise NotImplementedError(
-            f"Cannot format value of type {type(arg)}, only support Pickle obj or file")
+            f"Cannot format value of type {type(arg)}, only support Pickle obj or file"
+        )
 
     @__init__.register(bytes)
     def _(self, obj):

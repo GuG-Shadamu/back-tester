@@ -1,6 +1,14 @@
+# -*- coding: utf-8 -*-
+# @Author: Tairan Gao
+# @Date:   2023-05-03 21:51:19
+# @Last Modified by:   Tairan Gao
+# @Last Modified time: 2023-05-16 02:26:08
+
+
 import logging
 import logging.handlers
 import re
+
 
 class TaskAdapter(logging.LoggerAdapter):
     task_count = 1
@@ -16,19 +24,20 @@ class TaskAdapter(logging.LoggerAdapter):
 
 def setup_logger():
     logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
+    if not logger.handlers:
+        logger.setLevel(logging.DEBUG)
 
-    consoleHandler = logging.StreamHandler()
-    consoleHandler.setFormatter(ColorizedArgsFormatter("%(asctime)s [%(levelname)-5.5s]%(message)s"))
+        consoleHandler = logging.StreamHandler()
+        consoleHandler.setFormatter(
+            ColorizedArgsFormatter("%(asctime)s [%(levelname)-5.5s]%(message)s")
+        )
 
-    logger.addHandler(consoleHandler)
+        logger.addHandler(consoleHandler)
     return logger
-
 
 
 # https://gist.github.com/davidohana/32252f6235a2837a9f43e173784e66c9
 class ColorCodes:
-    
     grey = "\x1b[38;21m"
     green = "\x1b[1;32m"
     yellow = "\x1b[33;21m"
@@ -99,4 +108,3 @@ class ColorizedArgsFormatter(logging.Formatter):
         record.msg = orig_msg
         record.args = orig_args
         return formatted
-

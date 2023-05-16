@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-15 02:17:50
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-15 21:00:49
+# @Last Modified time: 2023-05-15 21:41:26
 
 from datetime import timedelta
 from flask import Flask, render_template
@@ -42,8 +42,6 @@ def background_thread():
 
     b = a.get_resample(timedelta(minutes=30))
     while True:
-        time.sleep(random.randint(1, 6))
-
         for bar in b.get_bars():
             bar_send = {
                 "time": bar.timestamp.isoformat(),
@@ -55,7 +53,7 @@ def background_thread():
             }
             socketio.emit("data", bar_send)  # Send the new bar to the client
             time.sleep(0.1)  # Wait for 5 seconds
-            print("msg sent")
+            print("sent")
 
 
 @socketio.on("connect")

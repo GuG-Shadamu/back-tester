@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+# @Author: Tairan Gao
+# @Date:   2023-04-10 13:15:43
+# @Last Modified by:   Tairan Gao
+# @Last Modified time: 2023-05-16 02:26:22
+
 import pickle
 from datetime import datetime, timedelta
 from dataclasses import dataclass
@@ -51,6 +57,7 @@ class TickerDataEntry(Serializable):
     @classmethod
     def from_csv_file(cls, asset: Asset, file_path: str) -> "TickerDataEntry":
         """load data from csv file"""
+        # TODO implement this
         pass
 
 
@@ -160,17 +167,3 @@ class OHLCData(Serializable):
                 row[5],  # volume
                 row[0],  # time
             )
-
-
-# a = OHLCData.from_csv_file(
-#     Asset(AssetType.FX, "USDCAD"), "data_example/DAT_ASCII_USDCAD_M1_202304.csv"
-# )
-
-# chart_code = a.draw()
-# output_file = "ohlc_chart.html"
-# with open(output_file, "w") as f:
-#     f.write(chart_code)
-# ex = a.data
-# b = a.get_resample(timedelta(minutes=2))
-# print(a)
-# print(b)

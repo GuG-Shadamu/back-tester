@@ -2,20 +2,17 @@
 # @Author: Tairan Gao
 # @Date:   2023-04-16 13:31:08
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-16 13:31:38
+# @Last Modified time: 2023-05-16 18:13:32
 
 
 from __future__ import annotations
-from collections import defaultdict  # the FUTURE of annotation...hah
-import json
 
 from typing import List
-from abc import ABC, abstractmethod
 import asyncio
-from quart import Quart, websocket
 
 from event_bus import EventBus
-from model import Event, EventType, Bar, Order, OrderType, Asset, AssetType
+from execution import DummyExecution, Execution
+from model import EventType, Asset, AssetType
 from data.core import DataFeed, OHLCBarFeed
 from data_handler import OHLCData
 
@@ -23,8 +20,11 @@ from log_utility import TaskAdapter, setup_logger
 from quart_handle import register_ws_route, ws
 from inspect import iscoroutinefunction
 
+from strategy import Strategy
+from view import View, LiveChart
+
 LOG = TaskAdapter(setup_logger(), {})
-app = Quart(__name__)
+
 
 
 class Engine:
@@ -88,145 +88,6 @@ class Engine:
                 await self.stop()
 
 
-class Execution(ABC):
-    @abstractmethod
-    def submit_order(self, order: Order) -> int:
-        ...
-
-    @abstractmethod
-    def cancel_order(self, order_id: int):
-        ...
-
-    @abstractmethod
-    def modify_order(self, order_id: int, order: Order):
-        ...
-
-    @abstractmethod
-    def on_order_create(self, order: Order):
-        LOG.info(f"Execution recieved {order =  }")
-        ...
-
-    @abstractmethod
-    def start(self):
-        ...
-
-
-class DummyExecution(Execution):
-    def __init__(self, bus: EventBus) -> None:
-        self.bus = bus
-
-    def submit_order(self, order: Order) -> int:
-        return super().submit_order(order)
-
-    def cancel_order(self, order_id: int):
-        return super().cancel_order(order_id)
-
-    def modify_order(self, order_id: int, order: Order):
-        return super().modify_order(order_id, order)
-
-    def on_order_create(self, order: Order):
-        return super().on_order_create(order)
-
-    def start(self):
-        return super().start()
-
-
-# 2. I write down strategy class
-class Strategy:
-    def __init__(self, bus: EventBus) -> None:
-        self.bus = bus
-
-    async def on_bar(self, bar: Bar):
-        LOG.info(f"Strategy reveived {bar}")
-        LOG.info(f"Submit Order...")
-        await self.submit_order()
-
-    async def submit_order(self):
-        order = Order(
-            asset=Asset(AssetType.CASH, name="Bitcoin"),
-            type=OrderType.MARKET,
-            price=-1,
-            amount=1.0,
-        )
-        event = Event(EventType.ORDER_CREATE, payload=order)
-        await self.bus.push(event)
-
-
-class View(ABC):
-    @abstractmethod
-    def on_bar(self, bar: Bar):
-        ...
-
-    @abstractmethod
-    def on_order_create(self, order: Order):
-        ...
-
-
-class LiveChart(View):
-    def __init__(self, bus: EventBus, port: int = 5000) -> None:
-        self.bus = bus
-        self.running_event = asyncio.Event()
-        self.port = port
-        self.connections = defaultdict(list)
-        self.iddle_buffer = list()
-
-    def add_connection(self, connection: websocket.WebSocketCommonProtocol):
-        self.connections[connection] = {
-            "buffer": [],
-            "last_ack": None,
-        }  # Add buffer and last_ack for each connection
-
-    def remove_connection(self, connection: websocket.WebSocketCommonProtocol):
-        self.connections.pop(connection)
-
-    async def start(self):
-        LOG.info(f"{self} process starting...")
-        await app.run_task(port=self.port, debug=True)
-
-    async def stop(self):
-        # TODO: stop websocket server
-        # Currently, Ctrl+C does not work
-        LOG.info(f"{self} process stopping...")
-        self.running_event.clear()
-        await app.shutdown()
-
-    async def on_bar(self, bar: Bar):
-        bar_send = {
-            "time": bar.timestamp.timestamp(),  # milliseconds
-            "open": bar.open,
-            "high": bar.high,
-            "low": bar.low,
-            "close": bar.close,
-            "volume": bar.volume,
-        }
-        if not self.connections:
-            self.iddle_buffer.append(bar_send)
-
-        for connection in self.connections:
-            if self.iddle_buffer:
-                self.connections[connection]["buffer"].extend(self.iddle_buffer)
-                self.iddle_buffer.clear()
-            else:
-                self.connections[connection]["buffer"].append(bar_send)
-
-        LOG.info(f"LiveChart buffered {bar}")
-
-    async def on_ack(self, connection, ack: str):
-        self.connections[connection]["last_ack"] = ack
-
-        buffer = self.connections[connection]["buffer"]
-        if not buffer:
-            return  # Nothing to send
-        await connection.send(json.dumps(buffer))
-        LOG.info(f"LiveChart sent buffer")
-        # Clear the buffer
-        self.connections[connection]["buffer"].clear()
-
-    async def on_order_create(self, order: Order):
-        LOG.info(f"LiveChart reveived {order}")
-        LOG.info(f"Plotting order ...")
-
-
 async def main():
     bus = EventBus()
     strategy = Strategy(bus)
@@ -235,10 +96,10 @@ async def main():
     )
     feed = OHLCBarFeed(bus, OHLCData=data_ohlc, push_freq=1)
     execution = DummyExecution(bus)
-    view = LiveChart(bus)
-    register_ws_route(app, "/ws", ws, view)
+    live_chart = LiveChart(bus)
+    register_ws_route(live_chart.app, "/ws", ws, live_chart)
 
-    engine = Engine(bus, strategy, feed, execution, view)
+    engine = Engine(bus, strategy, feed, execution, live_chart)
     await engine.run()
 
 

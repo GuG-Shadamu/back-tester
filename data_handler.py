@@ -162,10 +162,14 @@ class OHLCData(Serializable):
             )
 
 
-# a = OHLCDataEntry.from_csv_file(
+# a = OHLCData.from_csv_file(
 #     Asset(AssetType.FX, "USDCAD"), "data_example/DAT_ASCII_USDCAD_M1_202304.csv"
 # )
 
+# chart_code = a.draw()
+# output_file = "ohlc_chart.html"
+# with open(output_file, "w") as f:
+#     f.write(chart_code)
 # ex = a.data
 # b = a.get_resample(timedelta(minutes=2))
 # print(a)

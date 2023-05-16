@@ -5,7 +5,6 @@ from datetime import datetime
 from threading import Thread
 from time import sleep
 import asyncio
-import pandas as pd
 
 from event_bus import EventBus
 from model import Bar, Event, EventType

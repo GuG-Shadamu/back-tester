@@ -2,12 +2,24 @@
 # @Author: Tairan Gao
 # @Date:   2023-04-16 13:31:08
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-16 02:26:29
+# @Last Modified time: 2023-05-22 16:57:57
 
 from typing import Any
 from datetime import datetime
 from dataclasses import dataclass
 from enum import Enum
+
+
+# run along with the main thread
+class EventHandlerType(Enum):
+    STRATEGY = "STRATEGY"
+    EXECUTION = "EXECUTION"
+
+
+# run asynchronizely in a separate thread
+class EngineServiceType(Enum):
+    VIEW = "VIEW"
+    FEED = "FEED"
 
 
 # Basic Data Types

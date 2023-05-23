@@ -2,31 +2,40 @@
 # @Author: Tairan Gao
 # @Date:   2023-04-16 13:31:08
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-16 13:30:34
+# @Last Modified time: 2023-05-22 17:52:11
 
 
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
-from datetime import datetime
-from threading import Thread
+from abc import abstractmethod
 import asyncio
+from engine_components import EngineService
+
 
 from event_bus import EventBus
-from model import Bar, Event, EventType
+from model import EngineServiceType, Event, EventType
 
 from log_utility import TaskAdapter, setup_logger
 
 LOG = TaskAdapter(setup_logger(), {})
 
 
-class DataFeed(ABC):
+class DataFeed(EngineService):
+    type = EngineServiceType.FEED
+    name = "DataFeed"
+
     @abstractmethod
     def start(self):
         ...
 
+    @abstractmethod
+    def stop(self):
+        ...
+
 
 class OHLCBarFeed(DataFeed):
+    name = "OHLCBarFeed"
+
     def __init__(self, bus: EventBus, OHLCData: object, push_freq: float = 5) -> None:
         self.bus = bus
         self.OHLCData = OHLCData

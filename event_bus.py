@@ -2,17 +2,16 @@
 # @Author: Tairan Gao
 # @Date:   2023-04-16 13:31:08
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-16 04:46:46
+# @Last Modified time: 2023-05-22 22:24:43
 
 from __future__ import annotations
 
-from collections import defaultdict
 import asyncio
+from collections import defaultdict
 from typing import Dict, List, Callable
-from inspect import iscoroutinefunction
 
+from engine_components import EventHandler
 from model import EventType, Event
-
 from log_utility import TaskAdapter, setup_logger
 
 LOG = TaskAdapter(setup_logger(), {})
@@ -25,14 +24,15 @@ class EventBus:
             list
         )  # TODO: Could be a priority queue
 
-        self.events: asyncio.Queue[Event] = asyncio.Queue()
-        self.sample_freq = sample_freq
         self.running_event = asyncio.Event()
+        self.events: asyncio.Queue[Event] = asyncio.Queue()
 
-    def subscribe(self, event_type: EventType, callback: Callable):
-        LOG.debug(f"Subscribe {event_type} with {callback}")
-        # TODO: could be duplicated callbacks.
-        self.topics[event_type].append(callback)
+        self.sample_freq = sample_freq
+        self.event_handlers: List[EventHandler] = list()
+
+    def subscribe(self, event_handler: EventHandler):
+        LOG.info(f"EventBus subscribing {event_handler}")
+        self.event_handlers.append(event_handler)
 
     async def push(self, event: Event):
         await self.events.put(event)
@@ -45,12 +45,9 @@ class EventBus:
             while True:
                 if self.events.qsize() > 0:
                     event = await self.events.get()
-                    _callables = self.topics[event.type]
-                    for _callable in _callables:
-                        if iscoroutinefunction(_callable):
-                            await _callable(event.payload)
-                        else:
-                            _callable(event.payload)
+                    for handler in self.event_handlers:
+                        await handler.on_event(event)
+
                 await asyncio.sleep(self.sample_freq)
 
     def stop(self):

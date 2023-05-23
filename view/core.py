@@ -2,17 +2,13 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-16 17:53:28
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-22 22:23:17
+# @Last Modified time: 2023-05-23 13:55:30
 
 
 from abc import abstractmethod
 
-
-from engine_components import EventHandler
+from engine import EventHandler
 from model import Bar, Order
-from log_utility import TaskAdapter, setup_logger
-
-LOG = TaskAdapter(setup_logger(), {})
 
 
 class View(EventHandler):

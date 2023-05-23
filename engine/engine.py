@@ -1,26 +1,26 @@
 # -*- coding: utf-8 -*-
 # @Author: Tairan Gao
-# @Date:   2023-04-16 13:31:08
+# @Date:   2023-05-23 14:09:26
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-22 22:24:23
+# @Last Modified time: 2023-05-23 14:11:48
 
+# for simulation
+# the data feed runs in a separate thread
 
 from __future__ import annotations
 
-from typing import List
 import asyncio
 
-from event_bus import EventBus
-from log_utility import TaskAdapter, setup_logger
-from engine_components import EngineService, EventHandler
+from typing import List
 
+from event_bus import EventBus
+from log import TaskAdapter, setup_logger
+from .core import EngineService, EventHandler
 
 LOG = TaskAdapter(setup_logger(), {})
 
 
-# for simulation
-# the data feed runs in a separate thread
-class Engine:
+class BackTestEngine:
     def __init__(
         self,
         bus: EventBus,

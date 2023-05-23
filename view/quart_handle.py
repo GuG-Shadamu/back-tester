@@ -2,10 +2,10 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-15 02:17:50
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-16 12:52:31
+# @Last Modified time: 2023-05-23 13:55:53
 
 import json
-from quart import Quart, websocket
+from quart import websocket
 
 
 def ws(live_chart):

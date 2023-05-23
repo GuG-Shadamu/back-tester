@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 # @Author: Tairan Gao
-# @Date:   2023-05-16 17:51:50
+# @Date:   2023-05-23 13:36:43
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-22 22:25:20
+# @Last Modified time: 2023-05-23 13:57:46
 
 
-from engine_components import EventHandler
 from model import (
     EventType,
     Order,
@@ -16,15 +15,11 @@ from model import (
     Event,
 )
 from event_bus import EventBus
-from log_utility import TaskAdapter, setup_logger
+from log import TaskAdapter, setup_logger
 from utility import check_running
-
+from .core import Strategy
 
 LOG = TaskAdapter(setup_logger(), {})
-
-
-class Strategy(EventHandler):
-    pass
 
 
 class DummyStrategy(Strategy):

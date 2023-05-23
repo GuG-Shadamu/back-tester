@@ -2,17 +2,16 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-15 02:17:50
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-15 21:41:26
+# @Last Modified time: 2023-05-23 14:00:39
 
 from datetime import timedelta
-from flask import Flask, render_template
+from flask import Flask
 from flask_cors import CORS
 from flask_socketio import SocketIO
 
-import random
 import time
 
-from data_handler import OHLCData
+from data import OHLCData
 from model import AssetType, Asset
 
 

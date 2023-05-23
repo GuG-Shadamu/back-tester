@@ -2,10 +2,10 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-22 10:43:01
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-22 22:25:27
+# @Last Modified time: 2023-05-23 13:54:34
 import inspect
 
-from log_utility import TaskAdapter, setup_logger
+from log import TaskAdapter, setup_logger
 
 LOG = TaskAdapter(setup_logger(), {})
 

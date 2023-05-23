@@ -1,19 +1,27 @@
 # -*- coding: utf-8 -*-
 # @Author: Tairan Gao
-# @Date:   2023-05-22 17:02:57
+# @Date:   2023-04-16 13:31:08
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-22 22:24:16
+# @Last Modified time: 2023-05-23 14:12:02
+
 
 from __future__ import annotations
-
-import inspect
-from typing import Callable
 from abc import ABC, abstractmethod
 
-from model import EventType, Event
-from log_utility import TaskAdapter, setup_logger
+import inspect
 
-LOG = TaskAdapter(setup_logger(), {})
+from typing import Callable
+from model import Event, EventType
+
+
+class Engine(ABC):
+    @abstractmethod
+    async def start(self):
+        ...
+
+    @abstractmethod
+    def stop(self):
+        ...
 
 
 class EngineService(ABC):

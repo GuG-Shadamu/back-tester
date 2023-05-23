@@ -1,64 +1,16 @@
 # -*- coding: utf-8 -*-
 # @Author: Tairan Gao
-# @Date:   2023-04-10 13:15:43
+# @Date:   2023-05-23 13:30:28
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-16 02:26:22
-
-import pickle
-from datetime import datetime, timedelta
-from dataclasses import dataclass
-from typing import Optional
-from model import Asset, AssetType, Bar
+# @Last Modified time: 2023-05-23 14:14:15
 
 import polars as pl
 
-
-class Serializable:
-    @classmethod
-    def from_pickle_obj(cls, obj: type):
-        """convert from pickle object"""
-        return pickle.loads(obj)
-
-    @classmethod
-    def from_pickle_file(cls, file_path: str):
-        """convert from pickle file"""
-        with open(file_path, "rb") as file:
-            return pickle.load(file)
-
-    def to_pickle_obj(self) -> bytes:
-        """Serialize dataframe into pickle object"""
-        return pickle.dumps(self.data)
-
-    def to_pickle_file(self, file_path: str):
-        """Serialize dataframe into pickle file"""
-        with open(file_path, "wb") as f:
-            pickle.dump(self, f)
-
-
-@dataclass(frozen=True)
-class TickerDataEntry(Serializable):
-    """for storing ticker data"""
-
-    data: pl.DataFrame
-    type: AssetType
-
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
-
-    def __post_init__(self):
-        """Check if all fields are filled"""
-        for field_name, field_type in self.__annotations__.items():
-            field_value = getattr(self, field_name, None)
-            if field_value is None:
-                raise ValueError(f"Field '{field_name}' is required")
-            elif isinstance(field_type, pl.DataFrame) and field_value.is_empty():
-                raise ValueError(f"DataFrame field '{field_name}' is empty")
-
-    @classmethod
-    def from_csv_file(cls, asset: Asset, file_path: str) -> "TickerDataEntry":
-        """load data from csv file"""
-        # TODO implement this
-        pass
+from datetime import datetime, timedelta
+from dataclasses import dataclass
+from typing import Optional
+from model import Asset, Bar
+from .core import Serializable
 
 
 @dataclass(frozen=True)

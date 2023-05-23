@@ -2,23 +2,22 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-22 21:52:44
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-22 22:25:04
+# @Last Modified time: 2023-05-23 14:13:12
 
 from __future__ import annotations
 
 import asyncio
 
-from quart_handle import register_ws_route, ws
+from view import register_ws_route, ws, LiveChart, LiveChartView
+from datafeed import OHLCBarFeed
+from data import OHLCData
 
-from data.core import OHLCBarFeed
-from data_handler import OHLCData
-from engine import Engine
+from engine import BackTestEngine as Engine
 from event_bus import EventBus
 from execution import DummyExecution
+
 from model import Asset, AssetType
 from strategy import DummyStrategy
-from views.quart_livechart import LiveChart
-from views.view_livechart import LiveChartView
 
 
 async def main():

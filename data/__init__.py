@@ -2,8 +2,8 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-23 13:29:01
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-23 13:51:04
+# @Last Modified time: 2023-05-23 15:52:53
 
 from .core import Serializable
-from .OHLCdata import OHLCData
-from .tickerdata import TickerDataEntry
+from .ohlc_data import OHLCData
+from .ticker_data import TickerData

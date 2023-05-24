@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-23 13:29:41
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-23 13:50:46
+# @Last Modified time: 2023-05-23 15:52:53
 
 import polars as pl
 
@@ -15,7 +15,7 @@ from .core import Serializable
 
 
 @dataclass(frozen=True)
-class TickerDataEntry(Serializable):
+class TickerData(Serializable):
     """for storing ticker data"""
 
     data: pl.DataFrame
@@ -34,7 +34,7 @@ class TickerDataEntry(Serializable):
                 raise ValueError(f"DataFrame field '{field_name}' is empty")
 
     @classmethod
-    def from_csv_file(cls, asset: Asset, file_path: str) -> "TickerDataEntry":
+    def from_csv_file(cls, asset: Asset, file_path: str) -> "TickerData":
         """load data from csv file"""
         # TODO implement this
         pass

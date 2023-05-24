@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-# @Author: Tairan Gao
-# @Date:   2023-05-23 13:27:39
-# @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-23 13:27:39
-
 import glob
 import os
 from concurrent.futures import ThreadPoolExecutor
@@ -44,7 +38,7 @@ TRADE_MAP = {
 def gen_urls(
     symbol: str, freq: str, start: int, end: int, base: str, type: str = "spot"
 ):
-    """get all the urls of the history file"""
+    """ get all the urls of the history file """
     urls = []  # (filename, url)
     base_dir = f"{base}/{symbol}"
     for year in range(start, end + 1):
@@ -58,7 +52,7 @@ def gen_urls(
     return urls
 
 
-def gen_trade_url(symbol: str, start: int, end: int, base: str, type: str = "future"):
+def gen_trade_url(symbol: str, start: int, end: int, base: str, type: str="future"):
     # TODO: refactor this and gen_url
     urls = []  # (filename, url)
     base_dir = f"{base}/{symbol}"
@@ -71,11 +65,12 @@ def gen_trade_url(symbol: str, start: int, end: int, base: str, type: str = "fut
             urls.append((fullpath, url))
 
     return urls
+    
 
 
 def download_task(info: Tuple[str, str]):
-    """download files
-
+    """ download files
+    
     Parameters
     ----------
     info: (the file path to downloand to, the remote file location)
@@ -112,7 +107,6 @@ def download(
         for url in info:
             executor.submit(download_task, info=url)
 
-
 def download_trade(
     symbol: str,
     start: int,
@@ -124,14 +118,17 @@ def download_trade(
     """Download history bar data
     note: it won't download duplicated files
     """
-    info = gen_trade_url(symbol=symbol, start=start, end=end, base=base, type=type)
+    info = gen_trade_url(
+        symbol=symbol, start=start, end=end, base=base, type=type
+    )
     with ThreadPoolExecutor(max_workers=max_worker) as executor:
         for url in info:
             executor.submit(download_task, info=url)
 
 
+
 def load_raw_zip(symbol: str, freq: str, base: str) -> pd.DataFrame:
-    """Load history zip files into pandas"""
+    """ Load history zip files into pandas """
     path = f"{base}/{symbol}/{freq}/*.zip"
     files = glob.glob(path)
     dfs = []
@@ -159,44 +156,28 @@ def parquet_file(symbol: str, freq: str, start: int, end: int, base: str):
     return f"{base}/{symbol}/agg/{freq}/{start}-{end}-{freq}-{symbol}.parquet"
 
 
+
 if __name__ == "__main__":
     # Download raw zip files and dump a single parquet file
     base = "./future"  # change the target folder to host the files
     start = 2020
     end = 2023
     freq = "5m"
-    universe = [
-        "BTCUSDT",
-        "ETHUSDT",
-        "XRPUSDT",
-        "BNBUSDT",
-        "ADAUSDT",
-        "DOGEUSDT",
-        "LTCUSDT",
-        "1000SHIBUSDT",
-        "SOLUSDT",
-        "DOTUSDT",
-    ]
+    universe = ["BTCUSDT", "ETHUSDT", "XRPUSDT", "BNBUSDT", "ADAUSDT", "DOGEUSDT", "LTCUSDT", "1000SHIBUSDT", "SOLUSDT", "DOTUSDT"]
 
     for symbol in universe:
         # download(symbol, freq, start, end, base, max_worker=5, type="future")
         # Dump parquet file
         df = load_raw_zip(symbol, freq, base)
         file_path = f"{symbol}/agg/{freq}/{start}-{end}-{freq}-{symbol}.parquet"
-        parquet_path = f"{base}/{file_path}"
+        parquet_path = (
+            f"{base}/{file_path}"
+        )
         os.makedirs(os.path.dirname(parquet_path), exist_ok=True)
         df.to_parquet(parquet_path)
 
     # Combine to cross sectional dataframe
-    symbols = [
-        "open",
-        "high",
-        "low",
-        "close",
-        "volume",
-        "num_trades",
-        "quote_asset_vol",
-    ]
+    symbols = ["open", "high", "low", "close", "volume", "num_trades", "quote_asset_vol"]
     for field in symbols:
         print(f">> {field}")
         datas = []
@@ -205,7 +186,7 @@ if __name__ == "__main__":
             df = pd.read_parquet(parquet_file(name, freq, start, end, base))
             data = df[field]
             datas.append(data)
-
+        
         data = pd.concat(datas, axis=1, keys=universe)
         data.to_parquet(f"./future/processed/{field}.parquet")
 

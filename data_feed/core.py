@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-04-16 13:31:08
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-23 13:58:19
+# @Last Modified time: 2023-05-25 22:03:07
 
 
 from __future__ import annotations
@@ -12,16 +12,13 @@ import asyncio
 
 from engine import EngineService
 from event_bus import EventBus
-from model import EngineServiceType, Event, EventType
+from model import Event, EventType
 from log import TaskAdapter, setup_logger
 
 LOG = TaskAdapter(setup_logger(), {})
 
 
 class DataFeed(EngineService):
-    type = EngineServiceType.FEED
-    name = "DataFeed"
-
     @abstractmethod
     def start(self):
         ...
@@ -32,8 +29,6 @@ class DataFeed(EngineService):
 
 
 class OHLCBarFeed(DataFeed):
-    name = "OHLCBarFeed"
-
     def __init__(self, bus: EventBus, OHLCData: object, push_freq: float = 5) -> None:
         self.bus = bus
         self.OHLCData = OHLCData

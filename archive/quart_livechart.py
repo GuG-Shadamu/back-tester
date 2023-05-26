@@ -2,10 +2,12 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-22 15:03:17
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-23 13:59:06
+# @Last Modified time: 2023-05-25 21:59:17
 
 import asyncio
 import json
+import signal
+import sys
 
 from collections import defaultdict
 from typing import Any
@@ -30,12 +32,11 @@ class LiveChart(EngineService):
         self.port = port
         self.connections = defaultdict(list)
         # self.buffer_table: defaultdict[View, List[str]] = defaultdict(list)
-        self.iddle_buffler = list()
+        self.data_to_send = list()
 
     def add_connection(self, connection: Any):
         self.connections[connection] = {
             "buffer": [],
-            "last_ack": None,
         }  # Add buffer and last_ack for each connection
 
     def remove_connection(self, connection: Any):
@@ -44,14 +45,26 @@ class LiveChart(EngineService):
     async def start(self):
         LOG.info(f"Quart LiveChart process starting...")
         self.running_event.set()  # Set the event, meaning that the task is running.
-        await self.app.run_task(port=self.port, debug=True)
+        try:
+            await self.app.run_task(port=self.port, debug=True)
+        except KeyboardInterrupt:
+            LOG.info(f"Quart LiveChart process stopping...")
+            self.running_event.clear()
+            await self.app.shutdown()
 
     async def stop(self):
         # TODO: stop websocket server
         # Currently, Ctrl+C does not work
         LOG.info(f"Quart LiveChart process stopping...")
         self.running_event.clear()
+
         await self.app.shutdown()
+
+    async def shutdown_handler(self, *args):
+        LOG.info(f"Quart LiveChart process stopping...")
+        self.running_event.clear()
+        await self.app.shutdown()
+        sys.exit(0)
 
     def on_bar(self, bar: Bar):  # when new bar pushed in
         bar_send = {
@@ -64,12 +77,12 @@ class LiveChart(EngineService):
         }
 
         if not self.connections:
-            self.iddle_buffler.append(bar_send)
+            self.data_to_send.append(bar_send)
 
         for connection in self.connections:
-            if self.iddle_buffler:
-                self.connections[connection]["buffer"].extend(self.iddle_buffler)
-                self.iddle_buffler.clear()
+            if self.data_to_send:
+                self.connections[connection]["buffer"].extend(self.data_to_send)
+                self.data_to_send.clear()
             else:
                 self.connections[connection]["buffer"].append(bar_send)
 

@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-04-16 13:31:08
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-22 16:57:57
+# @Last Modified time: 2023-05-25 12:52:34
 
 from typing import Any
 from datetime import datetime
@@ -37,6 +37,7 @@ class Event:
 
 @dataclass(frozen=True)
 class Bar:
+    ticker: str
     open: float
     high: float
     low: float

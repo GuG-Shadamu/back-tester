@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-23 13:30:28
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-23 14:14:15
+# @Last Modified time: 2023-05-25 12:56:00
 
 import polars as pl
 
@@ -112,6 +112,7 @@ class OHLCData(Serializable):
         """generator for iterating through OHLC data"""
         for row in self.data.rows():
             yield Bar(
+                self.asset.name,
                 row[1],  # open
                 row[2],  # high
                 row[3],  # low

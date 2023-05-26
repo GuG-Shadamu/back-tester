@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-23 14:09:26
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-23 14:11:48
+# @Last Modified time: 2023-05-26 03:28:43
 
 # for simulation
 # the data feed runs in a separate thread
@@ -51,7 +51,10 @@ class BackTestEngine:
         for service in self.engine_services:
             self.tasks.append(asyncio.create_task(service.start()))
 
-        await asyncio.gather(*self.tasks)
+        try:
+            await asyncio.gather(*self.tasks)
+        except asyncio.CancelledError:
+            self.stop()
 
     def stop(self):
         LOG.info("Engine stopping")
@@ -65,3 +68,4 @@ class BackTestEngine:
         self.bus.stop()
         for service in self.engine_services:
             service.stop()
+        LOG.info("Engine stopped")

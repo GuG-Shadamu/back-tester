@@ -18,19 +18,19 @@ document.addEventListener('DOMContentLoaded', (event) => {
         socket = new WebSocket('ws://localhost:5000/ws');
 
         socket.onopen = function (event) {
+            socket.send(JSON.stringify({type: "connection_ack"}));
             console.log('Connected!');
-            var ack_msg = { ack: 'Connected!' };
-            socket.send(JSON.stringify(ack_msg));
-            console.log('Sent ack:', ack_msg);
-
         };
 
         socket.onmessage = function (event) {
-            var bars = JSON.parse(event.data);
-            console.log('Received data:', bars); // debug
-            var ack_msg = {ack: "received"};
-            for (var i = 0; i < bars.length; i++) {
-                var bar = bars[i];
+            var message = JSON.parse(event.data);
+
+            if (message.type === "heartbeat") {
+                socket.send(JSON.stringify({type: "heartbeat_ack"}));
+                console.log('HeartBeap!');
+            } else if (message.type === "bar") {
+                var bar = JSON.parse(event.data);
+                // console.log('Received data:', bar); // debug
                 candleSeries.update({
                     time: bar.time,
                     open: bar.open,
@@ -38,19 +38,19 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     low: bar.low,
                     close: bar.close,
                 });
+                // Send acknowledgement back to the server
+                socket.send(JSON.stringify({type: "bar_ack"}));
             }
-            // Send acknowledgement back to the server
-            
-            socket.send(JSON.stringify(ack_msg));
-            console.log('Sent ack:', ack_msg);
         };
 
         socket.onclose = function (event) {
-            var elapsedTime = Date.now() - connectionStartTime;
-            if (elapsedTime < maxReconnectionTime) {
-                setTimeout(connect, 0.1); // try to reconnect after 0.1 second
+            if (event.code !== 1000) {  // 1000 is the status code for a normal closure
+                var elapsedTime = Date.now() - connectionStartTime;
+                if (elapsedTime < maxReconnectionTime) {
+                    setTimeout(connect, 100); // try to reconnect after 0.1 second
+                }
             } else {
-                console.log('Disconnected!');
+                console.log('Disconnected! Code:', event.code, 'Reason:', event.reason);
             }
         };
 
@@ -58,14 +58,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
             console.log('Error:', event);
         }
 
-        // start the heartbeat mechanism
-        setInterval(function() {
-            if (socket.readyState === WebSocket.OPEN) {
-                var ack_msg = { ack: 'Ping' };
-                socket.send(JSON.stringify(ack_msg));
-                // console.log('Sent ack:', ack_msg);
-            }
-        }, 100); // send a ping every 5 seconds
+
+        
     }
 
     connect();

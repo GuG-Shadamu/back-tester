@@ -2,14 +2,15 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-22 21:52:44
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-23 15:38:30
+# @Last Modified time: 2023-05-26 03:32:42
 
 from __future__ import annotations
 from pathlib import Path
 
 import asyncio
+from multiprocessing import Process
 
-from view import register_ws_route, ws, LiveChart, LiveChartView
+from view import QuartWebSocketService, LiveChartView
 from data_feed import OHLCBarFeed
 from data import OHLCData
 
@@ -31,19 +32,15 @@ async def main():
         file_path,
     )
     feed = OHLCBarFeed(bus, OHLCData=data_ohlc, push_freq=1)
-    live_chart = LiveChart()
-    register_ws_route(live_chart.app, "/ws", ws, live_chart)
-
+    live_chart = QuartWebSocketService()
     view = LiveChartView(bus, live_chart)
 
     execution = DummyExecution(bus)
     strategy = DummyStrategy(bus)
+
     engine = Engine(bus, [feed, live_chart], [strategy, execution, view])
     await engine.start()
 
 
 if __name__ == "__main__":
-    try:
-        asyncio.run(main(), debug=True)
-    except KeyboardInterrupt:
-        print("Program interrupted. Exiting...")
+    asyncio.run(main(), debug=True)

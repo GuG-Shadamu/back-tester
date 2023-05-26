@@ -1,7 +1,12 @@
 # Back Tester
 
-Pet-project for quant trading self-training.
+## Status
 
+This is a personal project and it's currently under development as part of my self-study efforts. The project is continually evolving as I learn and incorporate more features and improvements. Feel free to explore, learn from it, or provide suggestions!
+
+## About
+
+Pet-project for quant trading self-training
 This project serves as a robust and efficient quantitative trading backtester, built from the ground up with Python. It has been carefully designed to accurately simulate the intricacies of real-world trading, helping to validate trading strategies
 
 ## Key Features
@@ -25,6 +30,15 @@ This project serves as a robust and efficient quantitative trading backtester, b
 - [ ] [Redis](https://redis.io/) as historical data & store frequently used data (e.g. like the latest prices or indicators calculated over a rolling window)
 - [ ] Restful API to fetch real-time or historical data from an external source
 
-## Main Idea
+## Strucutre
 
 [![infra](assets/fig1.png)](assets/fig1.png)
+
+
+## Inspiration
+
+This project was inspired by [FunCoder](https://github.com/wangzhe3224). I'm grateful for the ideas and knowledge gained from his work which served as a foundation.
+
+
+## Disclaimer
+Please note that this project is primarily for my personal learning and exploration. As such, it may not be regularly maintained or updated. I welcome any constructive feedback or suggestions for improvement!

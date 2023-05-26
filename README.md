@@ -6,8 +6,7 @@ This is a personal project and it's currently under development as part of my se
 
 ## About
 
-Pet-project for quant trading self-training
-This project serves as a robust and efficient quantitative trading backtester, built from the ground up with Python. It has been carefully designed to accurately simulate the intricacies of real-world trading, helping to validate trading strategies
+Pet-project for quant trading self-training. 
 
 ## Key Features
 

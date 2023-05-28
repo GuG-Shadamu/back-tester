@@ -2,19 +2,21 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-22 21:52:44
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-26 03:32:42
+# @Last Modified time: 2023-05-27 22:13:54
 
 from __future__ import annotations
 from pathlib import Path
 
 import asyncio
-from multiprocessing import Process
+import signal
 
-from view import QuartWebSocketService, LiveChartView
+from view import QuartLiveChartService, UpdateChart
 from data_feed import OHLCBarFeed
 from data import OHLCData
 
 from engine import BackTestEngine as Engine
+
+# from engine import simulate_keyboard_interrupt
 from event_bus import EventBus
 from execution import DummyExecution
 
@@ -32,15 +34,16 @@ async def main():
         file_path,
     )
     feed = OHLCBarFeed(bus, OHLCData=data_ohlc, push_freq=1)
-    live_chart = QuartWebSocketService()
-    view = LiveChartView(bus, live_chart)
+    live_chart = QuartLiveChartService()
+    view = UpdateChart(bus)
 
     execution = DummyExecution(bus)
     strategy = DummyStrategy(bus)
 
     engine = Engine(bus, [feed, live_chart], [strategy, execution, view])
+    # Register the shutdown signal handler
     await engine.start()
 
 
 if __name__ == "__main__":
-    asyncio.run(main(), debug=True)
+    asyncio.run(main())

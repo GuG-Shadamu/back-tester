@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-25 10:49:11
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-26 03:34:45
+# @Last Modified time: 2023-05-27 17:03:49
 
 
 # TODO: #1 still not able to stop this by Ctrl+C
@@ -13,6 +13,8 @@ import uuid
 
 from collections import deque, defaultdict
 from quart import Quart, websocket
+from hypercorn.asyncio import serve
+from hypercorn.config import Config
 
 from model import Bar
 from log import TaskAdapter, setup_logger
@@ -22,7 +24,7 @@ from .core import ChartService
 LOG = TaskAdapter(setup_logger(), {})
 
 
-class QuartWebSocketService(ChartService):
+class QuartLiveChartService(ChartService):
     def __init__(self, port: int = 5000, heartbeat_interval: int = 10) -> None:
         self.port = port
         self.heartbeat_interval = heartbeat_interval
@@ -86,6 +88,16 @@ class QuartWebSocketService(ChartService):
     async def start(self):
         LOG.info("Starting QuartWebSocketService")
         self.running_event.set()
+
+        # Configure Hypercorn
+        config = Config()
+        config.bind = [f"localhost:{self.port}"]
+        config.use_reloader = False
+
+        # Start the Quart app with Hypercorn
+        server_coroutine = serve(self.app, config)
+        self.quart_server = asyncio.ensure_future(server_coroutine)
+
         self.heartbeat_task = asyncio.create_task(self.heartbeat())
         self.quart_server = await self.app.run_task("localhost", self.port)
         await asyncio.gather(self.heartbeat_task)

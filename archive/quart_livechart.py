@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-22 15:03:17
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-25 21:59:17
+# @Last Modified time: 2023-05-27 17:17:54
 
 import asyncio
 import json
@@ -23,8 +23,6 @@ LOG = TaskAdapter(setup_logger(), {})
 
 
 class LiveChart(EngineService):
-    name = "QuartLiveChart"
-
     def __init__(self, port: int = 5000) -> None:
         self.app = Quart(__name__)
 
@@ -46,11 +44,9 @@ class LiveChart(EngineService):
         LOG.info(f"Quart LiveChart process starting...")
         self.running_event.set()  # Set the event, meaning that the task is running.
         try:
-            await self.app.run_task(port=self.port, debug=True)
-        except KeyboardInterrupt:
-            LOG.info(f"Quart LiveChart process stopping...")
-            self.running_event.clear()
-            await self.app.shutdown()
+            await self.app.run_task(port=self.port)
+        except asyncio.CancelledError:
+            self.stop()
 
     async def stop(self):
         # TODO: stop websocket server
@@ -59,6 +55,7 @@ class LiveChart(EngineService):
         self.running_event.clear()
 
         await self.app.shutdown()
+        LOG.info(f"Quart LiveChart process stoppped")
 
     async def shutdown_handler(self, *args):
         LOG.info(f"Quart LiveChart process stopping...")

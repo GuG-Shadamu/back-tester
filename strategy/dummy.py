@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-23 13:36:43
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-23 13:57:46
+# @Last Modified time: 2023-05-27 17:10:06
 
 
 from model import (
@@ -35,6 +35,7 @@ class DummyStrategy(Strategy):
         self.running = True
 
     def stop(self):
+        LOG.DEBUG(f"{self} process stopped")
         self.running = False
 
     @check_running

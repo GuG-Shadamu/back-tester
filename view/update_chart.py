@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-22 17:58:15
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-26 03:33:52
+# @Last Modified time: 2023-05-27 22:01:37
 
 
 from event_bus import EventBus
@@ -15,8 +15,8 @@ from .core import ChartService, View
 LOG = TaskAdapter(setup_logger(), {})
 
 
-class LiveChartView(View):
-    def __init__(self, bus: EventBus, chart_service: ChartService) -> None:
+class UpdateChart(View):
+    def __init__(self, bus: EventBus, chart_service: ChartService = None) -> None:
         self.bus = bus
         self.chart_service = chart_service
         self.running = False
@@ -30,10 +30,14 @@ class LiveChartView(View):
     def stop(self):
         self.running = False
 
+    def associate_service(self, service: ChartService):
+        self.chart_service = service
+
     @check_running
     async def on_bar(self, bar: Bar):
         LOG.debug(f"LiveChartView reveived {bar}")
-        await self.chart_service.on_bar(bar)
+        if self.chart_service:
+            await self.chart_service.on_bar(bar)
 
     @check_running
     def on_order_create(self, order: Order):

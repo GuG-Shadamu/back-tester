@@ -2,13 +2,14 @@
 # @Author: Tairan Gao
 # @Date:   2023-04-16 13:31:08
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-25 22:03:07
+# @Last Modified time: 2023-05-27 18:07:39
 
 
 from __future__ import annotations
 
 from abc import abstractmethod
 import asyncio
+import time
 
 from engine import EngineService
 from event_bus import EventBus
@@ -40,16 +41,24 @@ class OHLCBarFeed(DataFeed):
 
         bars = self.OHLCData.get_bars()
         self.running_event.set()  # Set the event, meaning that the task is running.
-        while self.running_event.is_set():
-            bar = next(bars)
-            if not bar:
-                break
-            await asyncio.sleep(self.push_freq)
+        try:
+            while self.running_event.is_set():
+                bar = next(bars)
+                if not bar:
+                    break
+                await asyncio.sleep(self.push_freq)
 
-            event = Event(type=EventType.BAR, payload=bar)
-            LOG.debug(f"OHLCBarFeed pushed {event}")
-            await self.bus.push(event)
+                event = Event(type=EventType.BAR, payload=bar)
+                LOG.debug(f"OHLCBarFeed pushed {event}")
+                await self.bus.push(event)
+
+        except (asyncio.CancelledError, KeyboardInterrupt):
+            pass
+        finally:
+            self.stop()
 
     def stop(self):
-        self.running_event.clear()  # Clear the event, which will stop the task.
-        LOG.info(f"{self} process stopped")
+        if self.running_event.is_set():
+            self.running_event.clear()  # Clear the event, which will stop the task.
+            time.sleep(0.1)
+            LOG.info(f"OHLCBarFeed process stopped")

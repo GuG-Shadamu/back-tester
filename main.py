@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-22 21:52:44
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-27 22:13:54
+# @Last Modified time: 2023-06-04 23:08:21
 
 from __future__ import annotations
 from pathlib import Path
@@ -40,7 +40,7 @@ async def main():
     execution = DummyExecution(bus)
     strategy = DummyStrategy(bus)
 
-    engine = Engine(bus, [feed, live_chart], [strategy, execution, view])
+    engine = Engine(bus, [feed], [strategy, execution, view])
     # Register the shutdown signal handler
     await engine.start()
 

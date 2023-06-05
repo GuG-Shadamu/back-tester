@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-27 22:16:07
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-30 02:04:11
+# @Last Modified time: 2023-06-04 23:20:20
 from collections import defaultdict
 from typing import Dict
 import polars as pl
@@ -25,7 +25,6 @@ def Portfolio(EventHandler):
         self.running = False
         self.handler_dict: dict[EventType, callable] = dict()
 
-        self.register(EventType.BAR, self.on_bar)
         self.mtm = pl.DataFrame(
             {
                 "timestamp": pl.Series([], dtype=pl.Datetime),

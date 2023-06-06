@@ -2,11 +2,11 @@
 # @Author: Tairan Gao
 # @Date:   2023-04-16 13:31:08
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-06-04 23:47:10
+# @Last Modified time: 2023-06-05 21:31:45
 
 
 from __future__ import annotations
-from abc import ABC, ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 
 import inspect
 
@@ -40,7 +40,7 @@ class EngineService(ABC):
         ...
 
 
-class MetaEventHandler(ABCMeta):
+class MetaEventHandler(type):
     def __new__(mcs, name, bases, attrs):
         new_class = super().__new__(mcs, name, bases, attrs)
         new_class.to_register = []
@@ -53,7 +53,7 @@ class MetaEventHandler(ABCMeta):
         return new_class
 
 
-class EventHandler(ABC, metaclass=MetaEventHandler):
+class EventHandler(metaclass=MetaEventHandler):
     def __init__(self, bus: EventBus):
         self.running = False
         self.handler_dict: dict[EventType, callable] = dict()
@@ -75,13 +75,12 @@ class EventHandler(ABC, metaclass=MetaEventHandler):
 
         return decorator
 
-    @abstractmethod
     def start(self):
-        ...
+        self.running = True
 
-    @abstractmethod
     def stop(self):
-        ...
+        LOG.DEBUG(f"{self} process stopped")
+        self.running = False
 
     async def on_event(self, event: Event):
         if not self.running:

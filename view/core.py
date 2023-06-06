@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-16 17:53:28
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-25 22:08:34
+# @Last Modified time: 2023-06-05 21:33:25
 
 
 from abc import abstractmethod
@@ -24,12 +24,4 @@ class View(EventHandler):
 class ChartService(EngineService):
     @abstractmethod
     async def on_bar(self, bar: Bar):
-        ...
-
-    @abstractmethod
-    async def start(self):
-        ...
-
-    @abstractmethod
-    def stop(self):
         ...

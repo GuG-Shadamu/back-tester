@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-16 17:50:24
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-23 13:53:18
+# @Last Modified time: 2023-06-05 21:31:20
 
 from abc import abstractmethod
 
@@ -21,14 +21,6 @@ class Execution(EventHandler):
 
     @abstractmethod
     def modify_order(self, order_id: int, order: Order):
-        ...
-
-    @abstractmethod
-    def start(self):
-        ...
-
-    @abstractmethod
-    def stop(self):
         ...
 
     @abstractmethod

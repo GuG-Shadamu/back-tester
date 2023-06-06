@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-23 13:52:18
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-06-04 23:43:55
+# @Last Modified time: 2023-06-05 21:33:31
 
 
 from engine import EventHandler
@@ -18,12 +18,6 @@ LOG = TaskAdapter(setup_logger(), {})
 class DummyExecution(Execution):
     def __init__(self, bus: EventBus) -> None:
         super().__init__(bus)
-
-    def start(self):
-        self.running = True
-
-    def stop(self):
-        self.running = False
 
     def submit_order(self, order: Order) -> int:
         return super().submit_order(order)

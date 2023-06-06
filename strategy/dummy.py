@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-23 13:36:43
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-06-04 23:35:47
+# @Last Modified time: 2023-06-05 21:31:30
 
 
 from engine import EventHandler
@@ -25,13 +25,6 @@ LOG = TaskAdapter(setup_logger(), {})
 class DummyStrategy(Strategy):
     def __init__(self, bus: EventBus) -> None:
         super().__init__(bus)
-
-    def start(self):
-        self.running = True
-
-    def stop(self):
-        LOG.DEBUG(f"{self} process stopped")
-        self.running = False
 
     @EventHandler.register(EventType.BAR)
     async def on_bar(self, bar: Bar):

@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-04-16 13:31:08
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-27 18:07:39
+# @Last Modified time: 2023-06-05 21:33:54
 
 
 from __future__ import annotations
@@ -20,13 +20,7 @@ LOG = TaskAdapter(setup_logger(), {})
 
 
 class DataFeed(EngineService):
-    @abstractmethod
-    def start(self):
-        ...
-
-    @abstractmethod
-    def stop(self):
-        ...
+    ...
 
 
 class OHLCBarFeed(DataFeed):

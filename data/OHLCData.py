@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-23 13:30:28
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-25 12:56:00
+# @Last Modified time: 2023-06-06 22:55:14
 
 import polars as pl
 
@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from dataclasses import dataclass
 from typing import Optional
 from model import Asset, Bar
-from .core import Serializable
+from .Serializable import Serializable
 
 
 @dataclass(frozen=True)

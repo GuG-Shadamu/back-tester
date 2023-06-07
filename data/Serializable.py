@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-# @Author: Tairan Gao
-# @Date:   2023-04-10 13:15:43
-# @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-23 13:31:55
-
 import pickle
 
 

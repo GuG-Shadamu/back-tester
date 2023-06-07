@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-23 13:29:41
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-23 15:52:53
+# @Last Modified time: 2023-06-06 22:54:58
 
 import polars as pl
 
@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from typing import Optional
 from model import Asset, AssetType
 
-from .core import Serializable
+from .Serializable import Serializable
 
 
 @dataclass(frozen=True)

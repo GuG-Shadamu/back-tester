@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-04-16 13:31:08
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-06-06 22:34:53
+# @Last Modified time: 2023-06-07 00:09:42
 
 from typing import Any
 from datetime import datetime
@@ -25,8 +25,10 @@ class EngineServiceType(Enum):
 # Basic Data Types
 class EventType(Enum):
     BAR = "BAR"
+    END = "END"
 
     # Order
+    ORDER_CREATE = "ORDER_CREATE"
     ORDER_SUBMIT = "ORDER_SUBMIT"
     ORDER_FILLED = "ORDER_FILLED"
 
@@ -61,7 +63,7 @@ class Asset:
 
 @dataclass(frozen=True)
 class Forex(Asset):
-    type = AssetType
+    type = AssetType.FX
     name: str
 
 
@@ -69,8 +71,8 @@ class Forex(Asset):
 class Order:
     asset: Asset
     type: OrderType
-    price: float
     amount: float
+    price: float = None
     fee: float = 0.0  # in percentage e.g. 0.01 = 1%
     filled: bool = False
 
@@ -93,13 +95,13 @@ class Bar:
     timestamp: datetime
 
 
-@dataclass(frozen=True)
+@dataclass
 class PortfolioMetrics:
     mtm: float
     # can add potential risk metrics here
 
 
-@dataclass(frozen=True)
+@dataclass
 class PortfolioConstituent:
     asset: Asset
     price: float

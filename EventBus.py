@@ -50,7 +50,7 @@ class EventBus:
             while self.running_event.is_set():
                 if self.events.qsize() > 0:
                     event = await self.events.get()
-
+                    # TODO: Handle END event
                     for handler in self.event_handlers:
                         await handler.on_event(event)
                 await asyncio.sleep(self.sample_freq)
@@ -58,6 +58,7 @@ class EventBus:
             self.stop()
 
     async def start_real_time(self):
+        # TODO: implement
         pass
 
     def stop(self):

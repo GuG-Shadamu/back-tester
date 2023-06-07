@@ -28,7 +28,7 @@ class PortfolioAnalyzer(EventHandler):
         self.df_constituents: dict[Asset, pl.DataFrame] = defaultdict(
             lambda: pl.DataFrame(
                 {
-                    "asset": pl.Series([], dtype=pl.Object),
+                    "asset": pl.Series([], dtype=pl.Utf8),
                     "timestamp": pl.Series([], dtype=pl.Datetime),
                     "price": pl.Series([], dtype=pl.Float64),
                     "amount": pl.Series([], dtype=pl.Float64),
@@ -41,19 +41,16 @@ class PortfolioAnalyzer(EventHandler):
     def update_df_constituents(self, constituent: PortfolioConstituent):
         LOG.debug(f"Portfolio constituent updated: {constituent.asset.name}")
         asset = constituent.asset
-        self.df_constituents[asset] = self.df_constituents[asset].vstack(
-            pl.DataFrame(
-                {
-                    "asset": pl.Series([asset], dtype=pl.Object),
-                    "timestamp": pl.Series(
-                        [self.bus.get_timestamp()], dtype=pl.Datetime
-                    ),
-                    "price": pl.Series([constituent.price], dtype=pl.Float64),
-                    "amount": pl.Series([constituent.amount], dtype=pl.Float64),
-                    "mtm": pl.Series([constituent.mtm], dtype=pl.Float64),
-                }
-            )
+        df_to_append = pl.DataFrame(
+            {
+                "asset": pl.Series([asset.name], dtype=pl.Utf8),
+                "timestamp": pl.Series([self.bus.get_timestamp()], dtype=pl.Datetime),
+                "price": pl.Series([constituent.price], dtype=pl.Float64),
+                "amount": pl.Series([constituent.amount], dtype=pl.Float64),
+                "mtm": pl.Series([constituent.mtm], dtype=pl.Float64),
+            }
         )
+        self.df_constituents[asset] = self.df_constituents[asset].vstack(df_to_append)
 
     @EventHandler.register(EventType.PORTFOLIO_METRICS_UPDATE)
     def update_df_mtm(self, metrics: PortfolioMetrics):

@@ -2,7 +2,7 @@ from engine.EventHandler import EventHandler
 from EventBus import EventBus
 from execution.Execution import Execution
 from log import LOG
-from model import EventType, Order
+from model import Event, EventType, Order
 
 
 class DummyExecution(Execution):
@@ -18,7 +18,11 @@ class DummyExecution(Execution):
     def modify_order(self, order_id: int, order: Order):
         return super().modify_order(order_id, order)
 
-    @EventHandler.register(EventType.ORDER_SUBMIT)
-    def on_order_create(self, order: Order):
+    @EventHandler.register(EventType.ORDER_CREATE)
+    async def on_order_create(self, order: Order):
         LOG.debug(f"DummyExecution recieved {order =  }")
-        return super().on_order_create(order)
+        event = Event(
+            EventType.ORDER_SUBMIT,
+            payload=order,
+        )
+        await self.bus.push(event)

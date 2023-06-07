@@ -24,7 +24,9 @@ class OHLCBarFeed(DataFeed):
             while self.running_event.is_set():
                 bar = next(bars)
                 if not bar:
-                    break
+                    self.bus.push(
+                        Event(type=EventType.END, payload=None, timestamp=None)
+                    )
                 await asyncio.sleep(self.push_freq)
 
                 event = Event(type=EventType.BAR, payload=bar, timestamp=bar.timestamp)

@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-22 21:52:44
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-06-06 22:53:35
+# @Last Modified time: 2023-06-06 23:49:51
 
 from __future__ import annotations
 from pathlib import Path
@@ -10,19 +10,19 @@ from pathlib import Path
 import asyncio
 
 
+from clearing_house import FakeClearingHouse
 from view import QuartLiveChartService, UpdateChart
 from data_feed.OHLCBarFeed import OHLCBarFeed
 from data import OHLCData
 
-from engine.BackTestEngine import BackTestEngine as Engine
+from engine import BackTestEngine as Engine
 
 # from engine import simulate_keyboard_interrupt
 from EventBus import EventBus
-from execution.DummyExecution import DummyExecution
-from portfolio.RealTimePortfolio import RealTimePortfolio as Portfolio
-
+from execution import DummyExecution
+from portfolio import RealTimePortfolio as Portfolio
 from model import Asset, AssetType
-from strategy.DummyStrategy import DummyStrategy
+from strategy import DummyStrategy
 
 
 async def main():
@@ -34,15 +34,19 @@ async def main():
         Asset(AssetType.FX, "USDCAD"),
         file_path,
     )
-    feed = OHLCBarFeed(bus, OHLCData=data_ohlc, push_freq=1)
+    feed = OHLCBarFeed(bus, OHLCData=data_ohlc, push_freq=0.1)
     live_chart = QuartLiveChartService()
     view = UpdateChart(bus)
 
     execution = DummyExecution(bus)
     strategy = DummyStrategy(bus)
-    portfolio = Portfolio(bus)
+    portfolio = Portfolio(bus, initial_cash=1000000, portfolio_analyzer=True)
 
-    engine = Engine(bus, [feed], [strategy, execution, view, portfolio])
+    fake_clearing_house = FakeClearingHouse(bus, transaction_fee=0.01)
+
+    engine = Engine(
+        bus, [feed], [strategy, execution, view, portfolio, fake_clearing_house]
+    )
     # Register the shutdown signal handler
     await engine.start()
 

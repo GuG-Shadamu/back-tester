@@ -2,8 +2,9 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-23 13:24:02
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-27 18:18:19
+# @Last Modified time: 2023-06-06 22:48:44
 
-from .core import View, ChartService
+from .View import View
+from .ChartService import ChartService
 from .update_chart import UpdateChart
 from .livechart_quart import QuartLiveChartService

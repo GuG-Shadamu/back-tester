@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 # @Author: Tairan Gao
-# @Date:   2023-05-16 17:51:50
+# @Date:   2023-06-06 22:40:32
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-06-04 23:17:19
+# @Last Modified time: 2023-06-06 22:53:40
 
-
-from engine import EventHandler
+from engine.EventHandler import EventHandler
 
 
 class Strategy(EventHandler):

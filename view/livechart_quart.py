@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-25 10:49:11
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-27 17:03:49
+# @Last Modified time: 2023-06-06 22:48:00
 
 
 # TODO: #1 still not able to stop this by Ctrl+C
@@ -15,13 +15,12 @@ from collections import deque, defaultdict
 from quart import Quart, websocket
 from hypercorn.asyncio import serve
 from hypercorn.config import Config
+from log.TaskAdapter import TaskAdapter
 
 from model import Bar
-from log import TaskAdapter, setup_logger
+from log import LOG
 
-from .core import ChartService
-
-LOG = TaskAdapter(setup_logger(), {})
+from .ChartService import ChartService
 
 
 class QuartLiveChartService(ChartService):

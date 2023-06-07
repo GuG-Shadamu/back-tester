@@ -1,19 +1,11 @@
-# -*- coding: utf-8 -*-
-# @Author: Tairan Gao
-# @Date:   2023-04-16 13:31:08
-# @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-06-06 22:33:30
+from engine import EventHandler
+from log import LOG
+from model import Event
+
 
 import asyncio
 from datetime import datetime
-
 from typing import List
-
-from engine import EventHandler
-from model import Event, EventType
-from log import TaskAdapter, setup_logger
-
-LOG = TaskAdapter(setup_logger(), {})
 
 
 class EventBus:

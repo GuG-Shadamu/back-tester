@@ -1,56 +1,10 @@
-# -*- coding: utf-8 -*-
-# @Author: Tairan Gao
-# @Date:   2023-04-16 13:31:08
-# @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-06-06 22:22:48
+from engine.MetaEventHandler import MetaEventHandler
+from EventBus import EventBus
+from log import LOG
+from model import Event, EventType
 
-
-from __future__ import annotations
-from abc import ABC, abstractmethod
 
 import inspect
-
-from typing import TYPE_CHECKING
-from model import Event, EventType
-from log import TaskAdapter, setup_logger
-
-LOG = TaskAdapter(setup_logger(), {})
-
-if TYPE_CHECKING:
-    from event_bus import EventBus
-
-
-class Engine(ABC):
-    @abstractmethod
-    async def start(self):
-        ...
-
-    @abstractmethod
-    def stop(self):
-        ...
-
-
-class EngineService(ABC):
-    @abstractmethod
-    async def start(self):
-        ...
-
-    @abstractmethod
-    def stop(self):
-        ...
-
-
-class MetaEventHandler(type):
-    def __new__(mcs, name, bases, attrs):
-        new_class = super().__new__(mcs, name, bases, attrs)
-        new_class.to_register = []
-
-        for _, attr_value in attrs.items():
-            if callable(attr_value) and hasattr(attr_value, "to_register"):
-                key = attr_value.to_register
-                new_class.to_register.append((key, attr_value))
-
-        return new_class
 
 
 class EventHandler(metaclass=MetaEventHandler):

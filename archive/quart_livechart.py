@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-22 15:03:17
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-27 17:17:54
+# @Last Modified time: 2023-06-06 22:54:22
 
 import asyncio
 import json
@@ -14,10 +14,11 @@ from typing import Any
 
 from quart import Quart
 
-from engine import EngineService
+from engine.EngineService import EngineService
+from log.TaskAdapter import TaskAdapter
 from model import Bar, Order
-from log import TaskAdapter, setup_logger
-from view import View
+from log import setup_logger
+from view.View import View
 
 LOG = TaskAdapter(setup_logger(), {})
 

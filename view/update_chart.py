@@ -2,17 +2,17 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-22 17:58:15
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-06-05 21:31:39
+# @Last Modified time: 2023-06-06 22:51:47
 
 
-from event_bus import EventBus
+from EventBus import EventBus
+from log.TaskAdapter import TaskAdapter
 from model import Bar, EventType, Order
-from log import TaskAdapter, setup_logger
-from engine import EventHandler
+from log import LOG
+from engine.EventHandler import EventHandler
+from .View import View
 
-from .core import ChartService, View
-
-LOG = TaskAdapter(setup_logger(), {})
+from .ChartService import ChartService
 
 
 class UpdateChart(View):

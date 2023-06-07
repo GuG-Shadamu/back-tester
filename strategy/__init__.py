@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-23 13:35:58
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-23 13:57:13
+# @Last Modified time: 2023-06-06 22:41:27
 
-from .core import Strategy
-from .dummy import DummyStrategy
+from .Strategy import Strategy
+from .DummyStrategy import DummyStrategy

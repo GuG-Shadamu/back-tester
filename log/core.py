@@ -2,38 +2,14 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-03 21:51:19
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-16 02:26:08
+# @Last Modified time: 2023-06-06 22:43:01
 
 
 import logging
 import logging.handlers
 import re
 
-
-class TaskAdapter(logging.LoggerAdapter):
-    task_count = 1
-
-    def __init__(self, logger, task_num):
-        super().__init__(logger, {})
-        self.task_id = self.__class__.task_count
-        self.__class__.task_count += 1
-
-    def process(self, msg, kwargs):
-        return f"[task {self.task_id}] {msg}", kwargs
-
-
-def setup_logger():
-    logger = logging.getLogger(__name__)
-    if not logger.handlers:
-        logger.setLevel(logging.DEBUG)
-
-        consoleHandler = logging.StreamHandler()
-        consoleHandler.setFormatter(
-            ColorizedArgsFormatter("%(asctime)s [%(levelname)-5.5s]%(message)s")
-        )
-
-        logger.addHandler(consoleHandler)
-    return logger
+from log.TaskAdapter import TaskAdapter
 
 
 # https://gist.github.com/davidohana/32252f6235a2837a9f43e173784e66c9
@@ -108,3 +84,20 @@ class ColorizedArgsFormatter(logging.Formatter):
         record.msg = orig_msg
         record.args = orig_args
         return formatted
+
+
+def setup_logger():
+    logger = logging.getLogger(__name__)
+    if not logger.handlers:
+        logger.setLevel(logging.DEBUG)
+
+        consoleHandler = logging.StreamHandler()
+        consoleHandler.setFormatter(
+            ColorizedArgsFormatter("%(asctime)s [%(levelname)-5.5s]%(message)s")
+        )
+
+        logger.addHandler(consoleHandler)
+    return logger
+
+
+LOG = TaskAdapter(setup_logger(), {})

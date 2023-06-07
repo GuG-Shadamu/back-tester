@@ -1,25 +1,11 @@
-# -*- coding: utf-8 -*-
-# @Author: Tairan Gao
-# @Date:   2023-04-16 13:31:08
-# @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-06-06 22:37:07
+from data_feed.DataFeed import DataFeed
+from EventBus import EventBus
+from log import LOG
+from model import Event, EventType
 
-
-from __future__ import annotations
 
 import asyncio
 import time
-
-from engine import EngineService
-from event_bus import EventBus
-from model import Event, EventType
-from log import TaskAdapter, setup_logger
-
-LOG = TaskAdapter(setup_logger(), {})
-
-
-class DataFeed(EngineService):
-    ...
 
 
 class OHLCBarFeed(DataFeed):

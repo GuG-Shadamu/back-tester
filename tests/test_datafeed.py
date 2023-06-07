@@ -2,12 +2,12 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-25 02:50:50
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-25 02:56:06
+# @Last Modified time: 2023-06-06 22:54:09
 import unittest
 from unittest.mock import Mock
 
 
-from data_feed import OHLCBarFeed
+from data_feed.OHLCBarFeed import OHLCBarFeed
 
 
 class TestDataFeed(unittest.TestCase):

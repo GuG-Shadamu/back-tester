@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-22 21:52:44
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-06-05 21:10:18
+# @Last Modified time: 2023-06-06 16:30:32
 
 from __future__ import annotations
 from pathlib import Path
@@ -20,7 +20,7 @@ from engine import BackTestEngine as Engine
 # from engine import simulate_keyboard_interrupt
 from event_bus import EventBus
 from execution import DummyExecution
-from portfolio import Portfolio
+from portfolio import RealTimePortfolio as Portfolio
 
 from model import Asset, AssetType
 from strategy import DummyStrategy

@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-23 14:09:26
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-05-26 03:28:43
+# @Last Modified time: 2023-06-06 21:42:49
 
 # for simulation
 # the data feed runs in a separate thread
@@ -41,12 +41,12 @@ class BackTestEngine:
     async def start(self):
         # subs
         self.running_event.set()  # Set the event, meaning that the task is running.
-        asyncio.create_task(self.bus.start())
+        asyncio.create_task(self.bus.start_simulation())
 
         for event_handler in self.event_handlers:
             event_handler.start()
 
-        self.tasks.append(asyncio.create_task(self.bus.start()))
+        self.tasks.append(asyncio.create_task(self.bus.start_simulation()))
 
         for service in self.engine_services:
             self.tasks.append(asyncio.create_task(service.start()))

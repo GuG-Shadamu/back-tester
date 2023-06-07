@@ -2,12 +2,11 @@
 # @Author: Tairan Gao
 # @Date:   2023-04-16 13:31:08
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-06-05 21:33:54
+# @Last Modified time: 2023-06-06 22:37:07
 
 
 from __future__ import annotations
 
-from abc import abstractmethod
 import asyncio
 import time
 
@@ -42,7 +41,7 @@ class OHLCBarFeed(DataFeed):
                     break
                 await asyncio.sleep(self.push_freq)
 
-                event = Event(type=EventType.BAR, payload=bar)
+                event = Event(type=EventType.BAR, payload=bar, timestamp=bar.timestamp)
                 LOG.debug(f"OHLCBarFeed pushed {event}")
                 await self.bus.push(event)
 

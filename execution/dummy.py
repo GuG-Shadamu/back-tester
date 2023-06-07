@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-23 13:52:18
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-06-05 21:33:31
+# @Last Modified time: 2023-06-06 22:31:25
 
 
 from engine import EventHandler
@@ -28,7 +28,7 @@ class DummyExecution(Execution):
     def modify_order(self, order_id: int, order: Order):
         return super().modify_order(order_id, order)
 
-    @EventHandler.register(EventType.ORDER_CREATE)
+    @EventHandler.register(EventType.ORDER_SUBMIT)
     def on_order_create(self, order: Order):
         LOG.debug(f"DummyExecution recieved {order =  }")
         return super().on_order_create(order)

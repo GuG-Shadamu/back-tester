@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-04-16 13:31:08
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-06-05 22:49:17
+# @Last Modified time: 2023-06-06 22:34:53
 
 from typing import Any
 from datetime import datetime
@@ -25,16 +25,21 @@ class EngineServiceType(Enum):
 # Basic Data Types
 class EventType(Enum):
     BAR = "BAR"
-    ORDER_CREATE = "ORDER_CREATE"
+
+    # Order
+    ORDER_SUBMIT = "ORDER_SUBMIT"
     ORDER_FILLED = "ORDER_FILLED"
-    TRADE = "TRADE"
-    PORTFOLIO_UPDATE = "PORTFOLIO_UPDATE"
+
+    ## Portfolio
+    PORTFOLIO_METRICS_UPDATE = "PORTFOLIO_METRICS_UPDATE"
+    PORTFOLIO_CONSTITUENT_UPDATE = "PORTFOLIO_CONSTITUENT_UPDATE"
 
 
-@dataclass(frozen=True)
+@dataclass
 class Event:
     type: EventType
     payload: Any
+    timestamp: datetime = None
 
 
 class AssetType(Enum):
@@ -60,14 +65,14 @@ class Forex(Asset):
     name: str
 
 
-@dataclass(frozen=True)
+@dataclass
 class Order:
     asset: Asset
-    timestamp: datetime
     type: OrderType
     price: float
     amount: float
-    fee: float
+    fee: float = 0.0  # in percentage e.g. 0.01 = 1%
+    filled: bool = False
 
 
 @dataclass(frozen=True)
@@ -90,7 +95,6 @@ class Bar:
 
 @dataclass(frozen=True)
 class PortfolioMetrics:
-    timestamp: datetime
     mtm: float
     # can add potential risk metrics here
 
@@ -98,7 +102,6 @@ class PortfolioMetrics:
 @dataclass(frozen=True)
 class PortfolioConstituent:
     asset: Asset
-    last_updated: datetime
     price: float
     amount: float
     mtm: float

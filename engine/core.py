@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-04-16 13:31:08
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-06-05 21:31:45
+# @Last Modified time: 2023-06-06 22:22:48
 
 
 from __future__ import annotations
@@ -58,8 +58,9 @@ class EventHandler(metaclass=MetaEventHandler):
         self.running = False
         self.handler_dict: dict[EventType, callable] = dict()
         self.bus = bus
-        for key, func in self.to_register:
-            self._register(key, func)
+        for keys, func in self.to_register:
+            for key in keys:
+                self._register(key, func)
             LOG.debug(f"Register {func} to {key}")
 
     def _register(self, key, func):
@@ -68,9 +69,9 @@ class EventHandler(metaclass=MetaEventHandler):
         self.handler_dict[key] = func
 
     @classmethod
-    def register(cls, key):
+    def register(cls, *keys):
         def decorator(func):
-            func.to_register = key
+            func.to_register = list(keys)
             return func
 
         return decorator
@@ -86,10 +87,12 @@ class EventHandler(metaclass=MetaEventHandler):
         if not self.running:
             LOG.debug(f"EventHandler {self} is not running, skip event {event}")
             return
-        event_type = event.type
 
-        if event_type in self.handler_dict:
-            _callable = self.handler_dict[event_type]
+        if event.timestamp is None:
+            event.timestamp = self.bus.get_timestamp()
+
+        if event.type in self.handler_dict:
+            _callable = self.handler_dict[event.type]
 
             if inspect.iscoroutinefunction(_callable):
                 await _callable(self, event.payload)

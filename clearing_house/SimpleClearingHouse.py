@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-06-06 16:28:24
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-06-06 23:38:43
+# @Last Modified time: 2023-08-15 17:36:53
 
 
 # build a fake clearing house for back-testing and testing purpose
@@ -18,7 +18,7 @@ from log import LOG
 from model import Asset, Event, EventType, Order, OrderType
 
 
-class FakeClearingHouse(EventHandler):
+class SimpleClearingHouse(EventHandler):
     def __init__(self, bus: EventBus, transaction_fee: float = 0.0):
         super().__init__(bus)
         self.price_book: DefaultDict[Asset, float] = defaultdict(float)
@@ -31,7 +31,7 @@ class FakeClearingHouse(EventHandler):
 
     @EventHandler.register(EventType.ORDER_SUBMIT)
     async def on_order_submit(self, order):
-        LOG.debug(f"FakeClearingHouse recieved {order = }")
+        LOG.debug(f"SimpleClearingHouse recieved {order = }")
         filled = False
         if order.type == OrderType.MARKET:
             price = self.price_book[order.asset]

@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-05-22 21:52:44
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-06-06 23:49:51
+# @Last Modified time: 2023-08-15 17:04:26
 
 from __future__ import annotations
 from pathlib import Path
@@ -10,7 +10,7 @@ from pathlib import Path
 import asyncio
 
 
-from clearing_house import FakeClearingHouse
+from clearing_house import SimpleClearingHouse
 from view import QuartLiveChartService, UpdateChart
 from data_feed.OHLCBarFeed import OHLCBarFeed
 from data import OHLCData
@@ -42,10 +42,12 @@ async def main():
     strategy = DummyStrategy(bus)
     portfolio = Portfolio(bus, initial_cash=1000000, portfolio_analyzer=True)
 
-    fake_clearing_house = FakeClearingHouse(bus, transaction_fee=0.01)
+    fake_clearing_house = SimpleClearingHouse(bus, transaction_fee=0.01)
 
     engine = Engine(
-        bus, [feed], [strategy, execution, view, portfolio, fake_clearing_house]
+        bus=bus,
+        services=[feed],
+        event_handlers=[strategy, execution, view, portfolio, fake_clearing_house],
     )
     # Register the shutdown signal handler
     await engine.start()

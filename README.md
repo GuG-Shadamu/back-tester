@@ -4,6 +4,12 @@
 
 This is a personal project and it's currently under development as part of my self-study efforts. The project is continually evolving as I learn and incorporate more features and improvements. Feel free to explore, learn from it, or provide suggestions!
 
+
+---
+
+The project has been paused as I have shifted my focus into C++ now. I might re-implement this via C++.
+
+
 ## About
 
 Pet-project for quant trading self-training. 

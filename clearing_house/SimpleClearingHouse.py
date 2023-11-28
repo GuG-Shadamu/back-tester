@@ -2,7 +2,7 @@
 # @Author: Tairan Gao
 # @Date:   2023-06-06 16:28:24
 # @Last Modified by:   Tairan Gao
-# @Last Modified time: 2023-08-15 17:36:53
+# @Last Modified time: 2023-09-13 12:11:33
 
 
 # build a fake clearing house for back-testing and testing purpose
@@ -60,7 +60,7 @@ class SimpleClearingHouse(EventHandler):
 
             event = Event(
                 EventType.ORDER_FILLED,
-                payload=order,
+                data=order,
             )
             LOG.debug(f"FakeClearingHouse filled {order = }")
             await self.bus.push(event)

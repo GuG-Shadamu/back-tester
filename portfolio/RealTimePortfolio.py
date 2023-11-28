@@ -93,7 +93,7 @@ class RealTimePortfolio(EventHandler):
         await self.bus.push(
             Event(
                 EventType.PORTFOLIO_METRICS_UPDATE,
-                payload=self.metrics,
+                data=self.metrics,
             )
         )
 
@@ -102,6 +102,6 @@ class RealTimePortfolio(EventHandler):
         await self.bus.push(
             Event(
                 EventType.PORTFOLIO_CONSTITUENT_UPDATE,
-                payload=constituent,
+                data=constituent,
             )
         )

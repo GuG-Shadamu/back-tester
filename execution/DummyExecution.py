@@ -23,6 +23,6 @@ class DummyExecution(Execution):
         LOG.debug(f"DummyExecution recieved {order =  }")
         event = Event(
             EventType.ORDER_SUBMIT,
-            payload=order,
+            data=order,
         )
         await self.bus.push(event)

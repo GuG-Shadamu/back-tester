@@ -42,13 +42,13 @@ class EventHandler(metaclass=MetaEventHandler):
             LOG.debug(f"EventHandler {self} is not running, skip event {event}")
             return
 
-        if event.timestamp is None:
-            event.timestamp = self.bus.get_timestamp()
-
         if event.type in self.handler_dict:
+            if event.timestamp is None:
+                event.timestamp = self.bus.get_timestamp()
+
             _callable = self.handler_dict[event.type]
 
             if inspect.iscoroutinefunction(_callable):
-                await _callable(self, event.payload)
+                await _callable(self, event.data)
             else:
-                _callable(self, event.payload)
+                _callable(self, event.data)

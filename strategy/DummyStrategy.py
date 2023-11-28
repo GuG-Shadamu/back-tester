@@ -42,6 +42,6 @@ class DummyStrategy(Strategy):
             await self.create_order(order)
 
     async def create_order(self, order: Order):
-        event = Event(EventType.ORDER_CREATE, payload=order)
+        event = Event(EventType.ORDER_CREATE, data=order)
         LOG.debug(f"Strategy create {order = }")
         await self.bus.push(event)

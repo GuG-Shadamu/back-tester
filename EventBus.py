@@ -2,7 +2,7 @@ from engine import EventHandler
 from log import LOG
 from model import Event
 
-
+import zmq
 import asyncio
 from datetime import datetime
 from typing import List
@@ -14,6 +14,10 @@ class EventBus:
 
         self.running_event = asyncio.Event()
         self.events: asyncio.Queue[Event] = asyncio.Queue()
+
+        context = zmq.Context()
+        self.socket = context.socket(zmq.ROUTER)
+        self.socket.bind("ipc:///tmp/master")
 
         self.event_handlers: List[EventHandler] = list()
 
@@ -48,6 +52,9 @@ class EventBus:
         self.running_event.set()  # Set the event, meaning that the task is running.
         try:
             while self.running_event.is_set():
+                identity, message = self.socket.recv_multipart()
+                event = Event.from_json(message)
+                
                 if self.events.qsize() > 0:
                     event = await self.events.get()
                     # TODO: Handle END event

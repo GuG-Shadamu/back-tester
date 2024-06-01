@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+message OHLCData {
+    int64 timestamp = 1;
+    uint32 tickerId = 2;
+    double open = 3;
+    double high = 4;
+    double low = 5;
+    double close = 6;
+    uint64 volume = 7;
+    int64 interval = 8;
+}

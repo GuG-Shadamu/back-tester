@@ -2,7 +2,7 @@
  * @Author: Tairan Gao
  * @Date:   2024-05-31 18:34:36
  * @Last Modified by:   Tairan Gao
- * @Last Modified time: 2024-05-31 23:36:57
+ * @Last Modified time: 2024-06-01 01:46:53
  */
 
 #include "OHLC.h"
@@ -11,6 +11,7 @@
 #include <limits>
 
 #include "Exceptions.h"
+#include "ohlc.pb.h"
 
 OHLC::OHLC(uint16_t tickerId, std::time_t interval)
     : tickerId(tickerId), interval(interval), initialized(false)
@@ -24,29 +25,31 @@ OHLC::OHLC(uint16_t tickerId, std::time_t interval)
 }
 
 OHLC::OHLC(uint16_t tickerId, std::time_t interval, std::time_t timestamp, double open, double high, double low, double close, uint64_t volume)
-    : tickerId(tickerId), interval(interval), initialized(true)
+    : tickerId(tickerId), interval(interval), initialized(true), timestamp(timestamp), open(open), high(high), low(low), close(close), volume(volume)
 {
-    timestamp = timestamp;
-    open = open;
-    high = high;
-    low = low;
-    close = close;
-    volume = volume;
 }
 
 OHLCData OHLC::get_data() const
 {
-    return {timestamp, tickerId, open, high, low, close, volume, interval};
+    OHLCData data;
+    data.set_timestamp(static_cast<int64_t>(timestamp));
+    data.set_tickerid(tickerId);
+    data.set_open(open);
+    data.set_high(high);
+    data.set_low(low);
+    data.set_close(close);
+    data.set_volume(volume);
+    data.set_interval(static_cast<int64_t>(interval));
+    return data;
 }
 
 void OHLC::update_OHLC(const OHLC &base_ohlc)
 {
-    OHLCData base_data = base_ohlc.get_data();
-    timestamp = std::max(base_data.timestamp, timestamp);
-    open = std::min(base_data.open, open);
-    high = std::max(base_data.high, high);
-    low = std::min(base_data.low, low);
-    close = base_data.close;
-    volume += base_data.volume;
+    timestamp = std::max(base_ohlc.timestamp, timestamp);
+    open = std::min(base_ohlc.open, open);
+    high = std::max(base_ohlc.high, high);
+    low = std::min(base_ohlc.low, low);
+    close = base_ohlc.close;
+    volume += base_ohlc.volume;
     initialized = true;
 }

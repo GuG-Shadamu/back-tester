@@ -2,7 +2,7 @@
  * @Author: Tairan Gao
  * @Date:   2024-05-31 22:39:40
  * @Last Modified by:   Tairan Gao
- * @Last Modified time: 2024-05-31 23:59:20
+ * @Last Modified time: 2024-06-01 01:58:26
  */
 #include "DataFeedWorker.h"
 
@@ -10,6 +10,7 @@
 
 #include "Logger.h"
 #include "TimeUtility.h"
+#include "ohlc.pb.h"
 
 void DataFeedWorker::_initialize_data_structure(uint16_t tickerId, std::vector<std::time_t> interval_list)
 {
@@ -39,7 +40,8 @@ DataFeedWorker::DataFeedWorker(uint16_t tickerId, std::vector<std::time_t> inter
 
 void DataFeedWorker::send_ohlc_data(const OHLCData& data)
 {
-    std::string message = data.to_string();
+    std::string message;
+    data.SerializeToString(&message);
 
     zmq::message_t zmq_message(message.size());
     memcpy(zmq_message.data(), message.c_str(), message.size());
@@ -112,7 +114,15 @@ void DataFeedWorker::read_and_publish(const std::chrono::time_point<std::chrono:
             {
                 for (const auto& ohlc : ready_to_send)
                 {
-                    send_ohlc_data(ohlc.get_data());
+                    try
+                    {
+                        send_ohlc_data(ohlc.get_data());
+                    }
+                    catch (const std::exception& e)
+                    {
+                        Logger::error("Exception in send_ohlc_data: " + std::string(e.what()));
+                        raise;
+                    }
                     sent_count += 1;
                 }
                 break;

@@ -9,11 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Include directories
 include_directories(${PROJECT_SOURCE_DIR}/include)
-
-# Add the executable
-file(GLOB SOURCES "src/*.cpp")
-file(GLOB INCLUDES "include/*.cpp")
-add_executable(Back-Tester ${SOURCES} ${INCLUDES})
+include_directories(${PROJECT_SOURCE_DIR}/protos) # Include protos directory
 
 # Find ZeroMQ package
 find_package(PkgConfig REQUIRED)
@@ -32,5 +28,14 @@ include_directories(${ZMQ_INCLUDE_DIR})
 # Find spdlog package
 find_package(spdlog REQUIRED)
 
+# Add the executable
+file(GLOB SOURCES "src/*.cpp" "protos/*.cc") # Include protos source files
+add_executable(Back-Tester ${SOURCES})
+
 # Link libraries
-target_link_libraries(Back-Tester PRIVATE ${ZMQ_LIBRARIES} spdlog::spdlog)
+target_link_libraries(Back-Tester ${ZMQ_LIBRARIES} spdlog::spdlog)
+
+# Link Protobuf library
+find_package(Protobuf REQUIRED)
+include_directories(${PROTOBUF_INCLUDE_DIRS})
+target_link_libraries(Back-Tester ${PROTOBUF_LIBRARIES})

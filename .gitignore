@@ -154,3 +154,10 @@ cython_debug/
 *.history
 data_example
 try.ipynb
+
+
+# proto
+
+protos/*.py
+protos/*.cc
+protos/*.h

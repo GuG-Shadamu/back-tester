@@ -1,0 +1,31 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Back-Tester",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Back-Tester",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "miDebuggerPath": "/usr/bin/gdb", // Adjust the path to gdb if necessary
+            "logging": {
+                "trace": true,
+                "engineLogging": true,
+                "traceResponse": true
+            },
+            "internalConsoleOptions": "openOnSessionStart"
+        }
+    ]
+}

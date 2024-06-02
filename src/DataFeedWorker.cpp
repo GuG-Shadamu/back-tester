@@ -2,15 +2,16 @@
  * @Author: Tairan Gao
  * @Date:   2024-05-31 22:39:40
  * @Last Modified by:   Tairan Gao
- * @Last Modified time: 2024-06-01 01:58:26
+ * @Last Modified time: 2024-06-01 20:15:31
  */
 #include "DataFeedWorker.h"
 
 #include <fstream>
+#include <queue>
 
 #include "Logger.h"
 #include "TimeUtility.h"
-#include "ohlc.pb.h"
+#include "zmq_message.pb.h"
 
 void DataFeedWorker::_initialize_data_structure(uint16_t tickerId, std::vector<std::time_t> interval_list)
 {
@@ -38,13 +39,17 @@ DataFeedWorker::DataFeedWorker(uint16_t tickerId, std::vector<std::time_t> inter
     log_thread = std::thread(&DataFeedWorker::log_sent_count, this);
 }
 
-void DataFeedWorker::send_ohlc_data(const OHLCData& data)
+void DataFeedWorker::send_ohlc_data(const zmq_message::OHLCData& data)
 {
-    std::string message;
-    data.SerializeToString(&message);
+    zmq_message::Wrapper message_wrapper;
+    message_wrapper.set_type(zmq_message::MessageType::MESSAGE_OHLCData);
+    *message_wrapper.mutable_data() = data;  // Use mutable_data to set the OHLCData field
 
-    zmq::message_t zmq_message(message.size());
-    memcpy(zmq_message.data(), message.c_str(), message.size());
+    std::string serialized_message_wrapper;
+    message_wrapper.SerializeToString(&serialized_message_wrapper);
+
+    zmq::message_t zmq_message(serialized_message_wrapper.size());
+    memcpy(zmq_message.data(), serialized_message_wrapper.data(), serialized_message_wrapper.size());
     publisher.send(zmq_message, zmq::send_flags::none);
 }
 
@@ -57,6 +62,7 @@ void DataFeedWorker::read_and_publish(const std::chrono::time_point<std::chrono:
         return;
     }
     std::string line;
+    std::queue<OHLC> ready_to_send;
     while (std::getline(file, line))
     {
         std::stringstream ss(line);
@@ -84,8 +90,6 @@ void DataFeedWorker::read_and_publish(const std::chrono::time_point<std::chrono:
         }
 
         OHLC& base_ohlc = interval_to_OHLC.at(base_interval);
-        std::vector<OHLC> ready_to_send;
-
         for (auto& [interval, ohlc] : interval_to_OHLC)
         {
             if (!ohlc.is_initialized())
@@ -100,7 +104,7 @@ void DataFeedWorker::read_and_publish(const std::chrono::time_point<std::chrono:
                 continue;
             }
 
-            ready_to_send.emplace_back(std::move(ohlc));
+            ready_to_send.push(std::move(ohlc));
             ohlc = {tickerId, interval, timestamp, open, high, low, close, volume};  // Reuse the existing object
         }
 
@@ -112,11 +116,12 @@ void DataFeedWorker::read_and_publish(const std::chrono::time_point<std::chrono:
 
             if (scaled_elapsed_time >= (timestamp - first_timestamp))
             {
-                for (const auto& ohlc : ready_to_send)
+                while (!ready_to_send.empty())
                 {
                     try
                     {
-                        send_ohlc_data(ohlc.get_data());
+                        send_ohlc_data(ready_to_send.front().get_data());
+                        ready_to_send.pop();
                     }
                     catch (const std::exception& e)
                     {

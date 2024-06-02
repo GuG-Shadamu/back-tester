@@ -1,5 +1,11 @@
 syntax = "proto3";
 
+package zmq_message;
+
+enum MessageType {
+  MESSAGE_OHLCData = 0;
+}
+
 message OHLCData {
     int64 timestamp = 1;
     uint32 tickerId = 2;
@@ -9,4 +15,9 @@ message OHLCData {
     double close = 6;
     uint64 volume = 7;
     int64 interval = 8;
+}
+
+message Wrapper {
+  MessageType type = 1;
+  OHLCData data = 2;  // Directly include OHLCData as a field
 }

@@ -2,7 +2,7 @@
  * @Author: Tairan Gao
  * @Date:   2024-05-31 18:20:00
  * @Last Modified by:   Tairan Gao
- * @Last Modified time: 2024-06-01 02:01:03
+ * @Last Modified time: 2024-06-01 20:43:11
  */
 #include <fstream>
 #include <iostream>
@@ -29,7 +29,7 @@ int main()
     std::vector<DataFeedWorker*> workers = {&worker1, &worker2};
 
     auto start_time = std::chrono::high_resolution_clock::now();
-    const double scaling_factor = 360000.0;
+    const double scaling_factor = 600.0;
     Logger::info("Starting shreads for workers");
     std::vector<std::thread> threads;
     for (DataFeedWorker* worker : workers)

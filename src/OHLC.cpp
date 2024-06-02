@@ -2,7 +2,7 @@
  * @Author: Tairan Gao
  * @Date:   2024-05-31 18:34:36
  * @Last Modified by:   Tairan Gao
- * @Last Modified time: 2024-06-01 01:46:53
+ * @Last Modified time: 2024-06-01 10:20:27
  */
 
 #include "OHLC.h"
@@ -11,7 +11,7 @@
 #include <limits>
 
 #include "Exceptions.h"
-#include "ohlc.pb.h"
+#include "zmq_message.pb.h"
 
 OHLC::OHLC(uint16_t tickerId, std::time_t interval)
     : tickerId(tickerId), interval(interval), initialized(false)
@@ -29,9 +29,9 @@ OHLC::OHLC(uint16_t tickerId, std::time_t interval, std::time_t timestamp, doubl
 {
 }
 
-OHLCData OHLC::get_data() const
+zmq_message::OHLCData OHLC::get_data() const
 {
-    OHLCData data;
+    zmq_message::OHLCData data;
     data.set_timestamp(static_cast<int64_t>(timestamp));
     data.set_tickerid(tickerId);
     data.set_open(open);

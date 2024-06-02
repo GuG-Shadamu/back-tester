@@ -64,6 +64,17 @@
                 "$gcc"
             ],
             "detail": "Generated task by Debugger."
+        },
+        {
+            "label": "Run Back-Tester",
+            "type": "shell",
+            "command": "${workspaceFolder}/build/Back-Tester",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "detail": "Task to run the Back-Tester program"
         }
     ],
     "version": "2.0.0"

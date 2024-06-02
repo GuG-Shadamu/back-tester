@@ -2,13 +2,14 @@
  * @Author: Tairan Gao
  * @Date:   2024-05-31 18:25:00
  * @Last Modified by:   Tairan Gao
- * @Last Modified time: 2024-05-31 23:33:23
+ * @Last Modified time: 2024-06-01 22:07:48
  */
 
 #ifndef LOGGER_H
 #define LOGGER_H
 
 #include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
 #include <memory>
@@ -18,10 +19,16 @@ class Logger
 public:
     static void init(const std::string &file_name, spdlog::level::level_enum log_level)
     {
-        instance().file_logger = spdlog::basic_logger_mt("file_logger", file_name);
+        auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(file_name, true);
+        auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        std::vector<spdlog::sink_ptr> sinks{file_sink, console_sink};
+        auto logger = std::make_shared<spdlog::logger>("file_logger", sinks.begin(), sinks.end());
+        spdlog::register_logger(logger);
+        instance().file_logger = logger;
         instance().file_logger->set_level(log_level);
         instance().file_logger->set_pattern("%Y-%m-%d %H:%M:%S.%e %l: %v");
         spdlog::flush_on(log_level);  // Flush logs immediately based on log level
+        instance().file_logger->info("Logger initialized and log file cleared.");
     }
 
     static std::shared_ptr<spdlog::logger> get_logger()
